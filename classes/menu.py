@@ -30,18 +30,13 @@ class Menu(BoxLayout):
             value=self.on_value_infection_probability)
         self.btn_add_healthy = Button(text='    +1\nHealthy',
                                       on_press=partial(
-                                          main.add_healthy,
-                                          self,
-                                          layout, 1))
+                                          main.add_healthy, 1))
         self.btn_add_infected = Button(text='    +1\nInfected',
                                        on_press=partial(
-                                          main.add_infected,
-                                          self,
-                                          layout, 1))
+                                          main.add_infected, 1))
         self.btn_reset = Button(text='Reset',
                                 on_press=partial(
-                                    main.reset_population,
-                                    self, layout))
+                                    main.reset_population))
         self.add_widget(self.btn_reset)
         self.add_widget(self.btn_add_healthy)
         self.add_widget(self.btn_add_infected)

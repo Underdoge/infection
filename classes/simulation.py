@@ -11,7 +11,7 @@ canvas.
 from classes.menu import Menu
 from classes.individual import Individual
 import logging
-import threading
+from threading import enumerate, Lock
 from concurrent.futures import ThreadPoolExecutor
 from kivy.uix.boxlayout import BoxLayout
 from kivy.app import App
@@ -19,7 +19,7 @@ from random import randint, uniform
 from kivy.vector import Vector
 from kivy.clock import Clock
 
-
+lock = Lock()
 logging.basicConfig(level=10, format="%(threadName)s:%(message)s")
 
 
@@ -28,7 +28,7 @@ class Simulation(App):
         super(Simulation, self).__init__(**kwargs)
         self.thread_pool = ThreadPoolExecutor(
              max_workers=200, thread_name_prefix="Thread-")
-        self.threads = len(threading.enumerate())
+        self.threads = len(enumerate())
         self.population = []
         self.healthy = 0
         self.infected = 0
@@ -49,6 +49,10 @@ class Simulation(App):
     def infected(self, infected_number):
         self._infected = infected_number
 
+    def sum_infected(self, infected_number):
+        self.menu.lbl_value_infected.text = str(
+            int(self.menu.lbl_value_infected.text) + infected_number)
+
     @infected.deleter
     def infected(self):
         self._infected = 0
@@ -58,8 +62,12 @@ class Simulation(App):
         return self._healthy
 
     @healthy.setter
-    def healthy(self, num):
-        self._healthy = num
+    def healthy(self, healthy_number):
+        self._healthy = healthy_number
+
+    def sum_healthy(self, healthy_number):
+        self.menu.lbl_value_healthy.text = str(
+            int(self.menu.lbl_value_healthy.text) + healthy_number)
 
     @healthy.deleter
     def healthy(self):
@@ -89,10 +97,10 @@ class Simulation(App):
     def population(self):
         self._population = []
 
-    def reset_population(self, menu, wid, *largs):
-        menu.lbl_value_population.text = "0"
-        menu.lbl_value_healthy.text = "0"
-        menu.lbl_value_infected.text = "0"
+    def reset_population(self, *kwargs):
+        self.menu.lbl_value_population.text = "0"
+        self.menu.lbl_value_healthy.text = "0"
+        self.menu.lbl_value_infected.text = "0"
         self.thread_pool.shutdown()
         self.thread_pool = ThreadPoolExecutor(
              max_workers=200, thread_name_prefix="Thread-")
@@ -100,42 +108,44 @@ class Simulation(App):
         del self.population
         del self.healthy
         del self.infected
-        wid.canvas.clear()
+        self.layout.canvas.clear()
 
-    def add_healthy(self, menu, wid, count, *largs):
-        menu.lbl_value_population.text = str(int(
-            menu.lbl_value_population.text) + count)
-        self.healthy += 1
-        menu.lbl_value_healthy.text = str(self.healthy)
-        with wid.canvas:
+    def add_healthy(self, count, *largs):
+        self.menu.lbl_value_population.text = str(
+            int(self.menu.lbl_value_population.text) + count)
+        with lock:
+            self.healthy += 1
+        self.menu.lbl_value_healthy.text = str(self.healthy)
+        with self.layout.canvas:
             for x in range(count):
-                coordinate = ((uniform(0, wid.width - 20),
-                               uniform(menu.height, wid.height)))
+                coordinate = ((uniform(0, self.layout.width - 20),
+                               uniform(self.menu.height, self.layout.height)))
                 individual = Individual(size=(20, 20),
                                         pos=coordinate,
                                         text="",
                                         color=[0, .3, .7, 1],
-                                        main=self)
+                                        simulation=self)
                 logging.info(f"New healthy individual with \
 {individual.infection_probability} infection probability.")
                 individual.speed = uniform(0.5, 0.9)
                 individual.direction = Vector(4, 0).rotate(randint(0, 360))
                 self.population.append(individual)
 
-    def add_infected(self, menu, wid, count, *largs):
-        menu.lbl_value_population.text = str(
-            int(menu.lbl_value_population.text) + count)
-        self.infected += 1
-        menu.lbl_value_infected.text = str(self.infected)
-        with wid.canvas:
+    def add_infected(self, count, *largs):
+        self.menu.lbl_value_population.text = str(
+            int(self.menu.lbl_value_population.text) + count)
+        with lock:
+            self.infected += 1
+        self.menu.lbl_value_infected.text = str(self.infected)
+        with self.layout.canvas:
             for x in range(count):
-                coordinate = ((uniform(0, wid.width - 20),
-                               uniform(menu.height, wid.height)))
+                coordinate = ((uniform(0, self.layout.width - 20),
+                               uniform(self.menu.height, self.layout.height)))
                 individual = Individual(size=(20, 20),
                                         pos=coordinate,
                                         text="",
                                         color=[.85, .07, .23, 1],
-                                        main=self)
+                                        simulation=self)
                 logging.info(f"New infected individual with \
 {individual.infection_probability} infection probability.")
                 individual.state = "infected"
@@ -156,8 +166,8 @@ class Simulation(App):
                                 self.population[i+1:])), 10))
         for individual in self.population:
             executor.submit(individual.move(self))
-        if len(threading.enumerate()) != self.threads:
-            self.threads = len(threading.enumerate())
+        if len(enumerate()) != self.threads:
+            self.threads = len(enumerate())
             logging.info(f"Threads: {self.threads}")
 
     def build(self):

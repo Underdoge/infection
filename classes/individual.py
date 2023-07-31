@@ -4,10 +4,12 @@ from kivy.properties import (
 )
 from kivy.uix.button import ButtonBehavior
 from kivy.uix.label import Label
+from threading import Lock
 from kivy.vector import Vector
 from random import uniform
 import logging
 
+lock = Lock()
 logging.basicConfig(level=10, format="%(threadName)s:%(message)s")
 
 
@@ -16,11 +18,11 @@ class Individual(ButtonBehavior, Label):
     direction_y = NumericProperty(0)
     direction = ReferenceListProperty(direction_x, direction_y)
 
-    def __init__(self, main, **kwargs):
+    def __init__(self, simulation, **kwargs):
         super(Individual, self).__init__(**kwargs)
-        self.main = main
+        self.simulation = simulation
         self.infection_probability = float(
-            main.menu.lbl_sldr_infection_probability.text)
+            simulation.menu.lbl_sldr_infection_probability.text)
         self.recovered = False
         self.speed = 0
         self.time_infected = 0
@@ -86,11 +88,12 @@ class Individual(ButtonBehavior, Label):
                 logging.info("Recovered!")
                 self.state = "healthy"
                 self.color = [0, .5, 0, 1]
-                self.main.healthy += 1
-                self.main.menu.lbl_value_healthy.text = str(self.main.healthy)
-                self.main.infected -= 1
-                self.main.menu.lbl_value_infected.text = str(
-                    self.main.infected)
+                with lock:
+                    self.simulation.healthy += 1
+                self.simulation.sum_healthy(1)
+                with lock:
+                    self.simulation.infected -= 1
+                self.simulation.sum_infected(-1)
                 self.speed = uniform(0.5, 0.9)
         else:
             infected_neighbor_count = 0
@@ -104,9 +107,10 @@ class Individual(ButtonBehavior, Label):
                 self.state = "infected"
                 logging.info("Infected!")
                 self.color = [.85, .07, .23, 1]
-                self.main.infected += 1
-                self.main.menu.lbl_value_infected.text = str(
-                    self.main.infected)
-                self.main.healthy -= 1
-                self.main.menu.lbl_value_healthy.text = str(self.main.healthy)
+                with lock:
+                    self.simulation.infected += 1
+                self.simulation.sum_infected(1)
+                with lock:
+                    self.simulation.healthy -= 1
+                self.simulation.sum_healthy(-1)
                 self.speed = uniform(0.3, 0.8)
