@@ -48,7 +48,7 @@ class Individual(ButtonBehavior, Label):
     def infection(self, others, radius):
         if self.recovered:
             pass
-        if self.state == "infected":
+        elif self.state == "infected":
             self.time_infected += 1
             if self.time_infected == 2000:
                 logging.info("Recovered!")

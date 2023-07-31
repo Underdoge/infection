@@ -15,7 +15,7 @@ import threading
 from concurrent.futures import ThreadPoolExecutor
 from kivy.uix.boxlayout import BoxLayout
 from kivy.app import App
-from random import random, randint, uniform
+from random import randint, uniform
 from kivy.vector import Vector
 from kivy.clock import Clock
 
@@ -88,8 +88,8 @@ class MainWindow(App):
         menu.lbl_value_healthy.text = str(self.healthy)
         with wid.canvas:
             for x in range(count):
-                coordinate = ((random() * wid.width + wid.x,
-                               random() * wid.height + wid.y))
+                coordinate = ((uniform(0, wid.width - 20),
+                               uniform(menu.height, wid.height)))
                 individual = Individual(size=(20, 20),
                                         pos=coordinate,
                                         text="",
@@ -109,8 +109,8 @@ class MainWindow(App):
         menu.lbl_value_infected.text = str(self.infected)
         with wid.canvas:
             for x in range(count):
-                coordinate = ((random() * wid.width + wid.x,
-                               random() * wid.height + wid.y))
+                coordinate = ((uniform(0, wid.width - 20),
+                               uniform(menu.height, wid.height)))
                 individual = Individual(size=(20, 20),
                                         pos=coordinate,
                                         text="",
@@ -132,9 +132,9 @@ class MainWindow(App):
                     self.population[:i]+self.population[i+1:], 10))
             for individual in self.population:
                 executor.submit(individual.move(self))
-            if len(threading.enumerate()) != self.threads:
-                self.threads = len(threading.enumerate())
-                logging.info(f"Threads: {self.threads}")
+            # if len(threading.enumerate()) != self.threads:
+            #    self.threads = len(threading.enumerate())
+            #    logging.info(f"Threads: {self.threads}")
 
     def build(self):
         self.threads = len(threading.enumerate())
