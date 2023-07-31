@@ -1,5 +1,5 @@
-from classes.MainWindow import MainWindow
+from classes.simulation import Simulation
 
 
 if __name__ == '__main__':
-    MainWindow().run()
+    Simulation().run()

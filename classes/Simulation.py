@@ -8,8 +8,8 @@ label at the bottom. Pressing the buttons adds small colored squares to the
 canvas.
 
 '''
-from classes.Menu import Menu
-from classes.Individual import Individual
+from classes.menu import Menu
+from classes.individual import Individual
 import logging
 import threading
 from concurrent.futures import ThreadPoolExecutor
@@ -22,7 +22,14 @@ from kivy.clock import Clock
 logging.basicConfig(level=10, format="%(threadName)s:%(message)s")
 
 
-class MainWindow(App):
+class Simulation(App):
+    def __init__(self, **kwargs):
+        super(Simulation, self).__init__(**kwargs)
+        self.threads = len(threading.enumerate())
+        self.population = []
+        self.healthy = 0
+        self.infected = 0
+
     @property
     def infected(self):
         return self._infected
@@ -137,10 +144,6 @@ class MainWindow(App):
             #    logging.info(f"Threads: {self.threads}")
 
     def build(self):
-        self.threads = len(threading.enumerate())
-        self.population = []
-        self.healthy = 0
-        self.infected = 0
         self.root = BoxLayout(orientation='vertical')
         self.layout = BoxLayout()
         self.menu = Menu(self, self.layout, size_hint=(1, 0.2))
