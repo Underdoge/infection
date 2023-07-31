@@ -51,7 +51,6 @@ class Individual(ButtonBehavior, Label):
         elif self.state == "infected":
             self.time_infected += 1
             if self.time_infected == 2000:
-                logging.info("Recovered!")
                 self.recovered = True
                 self.state = "healthy"
                 self.main.healthy += 1
@@ -69,7 +68,6 @@ class Individual(ButtonBehavior, Label):
                 [1 for x in np.random.random(neighbor_count)
                  if x < self.infection_probability]
                  ) > 0:
-                logging.info("Infected!")
                 self.state = "infected"
                 self.main.infected += 1
                 self.menu.lbl_value_infected.text = str(self.main.infected)
