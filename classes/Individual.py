@@ -46,19 +46,19 @@ class Individual(ButtonBehavior, Label):
             self.direction_x *= -1
 
     def infection(self, others, radius):
-        # if self.recovered:
-        # pass
+        if self.recovered:
+            pass
         if self.state == "infected":
             self.time_infected += 1
             if self.time_infected == 2000:
                 logging.info("Recovered!")
+                self.recovered = True
                 self.state = "healthy"
                 self.main.healthy += 1
                 self.menu.lbl_value_healthy.text = str(self.main.healthy)
                 self.main.infected -= 1
                 self.menu.lbl_value_infected.text = str(self.main.infected)
                 self.speed = uniform(0.5, 0.9)
-                self.recovered = True
         else:
             neighbor_count = 0
             for other in others:
