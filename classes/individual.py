@@ -24,7 +24,7 @@ class Individual(ButtonBehavior, Label):
         super(Individual, self).__init__(**kwargs)
         self.menu = menu
         self.main = main
-        self._infection_probability = float(
+        self.infection_probability = float(
             menu.lbl_sldr_infection_probability.text)
 
     @property
