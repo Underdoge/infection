@@ -1,7 +1,8 @@
+#:kivy 2.0
 <Individual>:
     canvas:
-        Color:
-            rgb: (0, .3, .7, 1) if self.state == 'healthy' else (.85, .07, .23, 1)
+        Color: 
+            rgb: (self.color)
         RoundedRectangle:
             size: (self.size)
             pos: (self.pos)

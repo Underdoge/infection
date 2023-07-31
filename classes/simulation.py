@@ -19,24 +19,35 @@ from random import randint, uniform
 from kivy.vector import Vector
 from kivy.clock import Clock
 
+
 logging.basicConfig(level=10, format="%(threadName)s:%(message)s")
 
 
 class Simulation(App):
     def __init__(self, **kwargs):
         super(Simulation, self).__init__(**kwargs)
+        self.thread_pool = ThreadPoolExecutor(
+             max_workers=200, thread_name_prefix="Thread-")
         self.threads = len(threading.enumerate())
         self.population = []
         self.healthy = 0
         self.infected = 0
 
     @property
+    def thread_pool(self):
+        return self._thread_pool
+
+    @thread_pool.setter
+    def thread_pool(self, thread_pool):
+        self._thread_pool = thread_pool
+
+    @property
     def infected(self):
         return self._infected
 
     @infected.setter
-    def infected(self, num):
-        self._infected = num
+    def infected(self, infected_number):
+        self._infected = infected_number
 
     @infected.deleter
     def infected(self):
@@ -82,10 +93,13 @@ class Simulation(App):
         menu.lbl_value_population.text = "0"
         menu.lbl_value_healthy.text = "0"
         menu.lbl_value_infected.text = "0"
+        self.thread_pool.shutdown()
+        self.thread_pool = ThreadPoolExecutor(
+             max_workers=200, thread_name_prefix="Thread-")
+        del self.threads
         del self.population
         del self.healthy
         del self.infected
-        print(f"population: {len(self.population)}")
         wid.canvas.clear()
 
     def add_healthy(self, menu, wid, count, *largs):
@@ -100,7 +114,7 @@ class Simulation(App):
                 individual = Individual(size=(20, 20),
                                         pos=coordinate,
                                         text="",
-                                        menu=menu,
+                                        color=[0, .3, .7, 1],
                                         main=self)
                 logging.info(f"New healthy individual with \
 {individual.infection_probability} infection probability.")
@@ -120,7 +134,7 @@ class Simulation(App):
                 individual = Individual(size=(20, 20),
                                         pos=coordinate,
                                         text="",
-                                        menu=menu,
+                                        color=[.85, .07, .23, 1],
                                         main=self)
                 logging.info(f"New infected individual with \
 {individual.infection_probability} infection probability.")
@@ -130,16 +144,21 @@ class Simulation(App):
                 self.population.append(individual)
 
     def update(self, dt):
-        with ThreadPoolExecutor(
-             max_workers=50, thread_name_prefix="Thread-") as executor:
-            for i in range(0, len(self.population)):
-                executor.submit(self.population[i].infection(
-                    self.population[:i]+self.population[i+1:], 10))
-            for individual in self.population:
-                executor.submit(individual.move(self))
-            # if len(threading.enumerate()) != self.threads:
-            #    self.threads = len(threading.enumerate())
-            #    logging.info(f"Threads: {self.threads}")
+        executor = self.thread_pool
+        for i in range(0, len(self.population)):
+            executor.submit(
+                self.population[i].infection(
+                    list(filter(
+                        lambda x: x.state == "infected",
+                        self.population[:i]))+list(
+                            filter(
+                                lambda x: x.state == "infected",
+                                self.population[i+1:])), 10))
+        for individual in self.population:
+            executor.submit(individual.move(self))
+        if len(threading.enumerate()) != self.threads:
+            self.threads = len(threading.enumerate())
+            logging.info(f"Threads: {self.threads}")
 
     def build(self):
         self.root = BoxLayout(orientation='vertical')

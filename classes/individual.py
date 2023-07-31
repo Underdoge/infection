@@ -1,6 +1,6 @@
 import numpy as np
 from kivy.properties import (
-    NumericProperty, ReferenceListProperty, StringProperty, BooleanProperty
+    NumericProperty, ReferenceListProperty
 )
 from kivy.uix.button import ButtonBehavior
 from kivy.uix.label import Label
@@ -12,20 +12,51 @@ logging.basicConfig(level=10, format="%(threadName)s:%(message)s")
 
 
 class Individual(ButtonBehavior, Label):
-    state = StringProperty("healthy")
-    time_infected = NumericProperty(0)
-    recovered = BooleanProperty(False)
-    speed = NumericProperty(0)
     direction_x = NumericProperty(0)
     direction_y = NumericProperty(0)
     direction = ReferenceListProperty(direction_x, direction_y)
 
-    def __init__(self, menu, main, **kwargs):
+    def __init__(self, main, **kwargs):
         super(Individual, self).__init__(**kwargs)
-        self.menu = menu
         self.main = main
         self.infection_probability = float(
-            menu.lbl_sldr_infection_probability.text)
+            main.menu.lbl_sldr_infection_probability.text)
+        self.recovered = False
+        self.speed = 0
+        self.time_infected = 0
+        self.state = "healthy"
+
+    @property
+    def state(self):
+        return self._state
+
+    @state.setter
+    def state(self, state):
+        self._state = state
+
+    @property
+    def time_infected(self):
+        return self._time_infected
+
+    @time_infected.setter
+    def time_infected(self, time_infected):
+        self._time_infected = time_infected
+
+    @property
+    def speed(self):
+        return self._speed
+
+    @speed.setter
+    def speed(self, speed):
+        self._speed = speed
+
+    @property
+    def recovered(self):
+        return self._recovered
+
+    @recovered.setter
+    def recovered(self, recovered):
+        self._recovered = recovered
 
     @property
     def infection_probability(self):
@@ -45,32 +76,37 @@ class Individual(ButtonBehavior, Label):
         if (self.x < 0) or (self.right > window.root.width):
             self.direction_x *= -1
 
-    def infection(self, others, radius):
+    def infection(self, infected_others, radius):
         if self.recovered:
             pass
         elif self.state == "infected":
             self.time_infected += 1
             if self.time_infected == 2000:
                 self.recovered = True
+                logging.info("Recovered!")
                 self.state = "healthy"
+                self.color = [0, .5, 0, 1]
                 self.main.healthy += 1
-                self.menu.lbl_value_healthy.text = str(self.main.healthy)
+                self.main.menu.lbl_value_healthy.text = str(self.main.healthy)
                 self.main.infected -= 1
-                self.menu.lbl_value_infected.text = str(self.main.infected)
+                self.main.menu.lbl_value_infected.text = str(
+                    self.main.infected)
                 self.speed = uniform(0.5, 0.9)
         else:
-            neighbor_count = 0
-            for other in others:
-                if other.state == "infected":
-                    if self.distance(other.pos) < radius:
-                        neighbor_count += 1
+            infected_neighbor_count = 0
+            for infected_other in infected_others:
+                if self.distance(infected_other.pos) < radius:
+                    infected_neighbor_count += 1
             if sum(
-                [1 for x in np.random.random(neighbor_count)
+                [1 for x in np.random.random(infected_neighbor_count)
                  if x < self.infection_probability]
                  ) > 0:
                 self.state = "infected"
+                logging.info("Infected!")
+                self.color = [.85, .07, .23, 1]
                 self.main.infected += 1
-                self.menu.lbl_value_infected.text = str(self.main.infected)
+                self.main.menu.lbl_value_infected.text = str(
+                    self.main.infected)
                 self.main.healthy -= 1
-                self.menu.lbl_value_healthy.text = str(self.main.healthy)
+                self.main.menu.lbl_value_healthy.text = str(self.main.healthy)
                 self.speed = uniform(0.3, 0.8)
