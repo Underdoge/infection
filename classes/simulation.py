@@ -149,7 +149,7 @@ class Simulation(App):
                 logging.info(f"New infected individual with \
 {individual.infection_probability} infection probability.")
                 individual.state = "infected"
-                individual.speed = uniform(0.3, 0.8)
+                individual.speed = uniform(0.3, 0.6)
                 individual.direction = Vector(4, 0).rotate(randint(0, 360))
                 self.population.append(individual)
 

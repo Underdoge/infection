@@ -26,6 +26,7 @@ class Individual(ButtonBehavior, Label):
         self.recovered = False
         self.speed = 0
         self.time_infected = 0
+        self.cooldown = 0
         self.state = "healthy"
 
     @property
@@ -43,6 +44,14 @@ class Individual(ButtonBehavior, Label):
     @time_infected.setter
     def time_infected(self, time_infected):
         self._time_infected = time_infected
+
+    @property
+    def cooldown(self):
+        return self._cooldown
+
+    @cooldown.setter
+    def cooldown(self, cooldown):
+        self._cooldown = cooldown
 
     @property
     def speed(self):
@@ -81,6 +90,8 @@ class Individual(ButtonBehavior, Label):
     def infection(self, infected_others, radius):
         if self.recovered:
             pass
+        elif self.cooldown > 0:
+            self.cooldown -= 1
         elif self.state == "infected":
             self.time_infected += 1
             if self.time_infected == 2000:
@@ -98,19 +109,24 @@ class Individual(ButtonBehavior, Label):
         else:
             infected_neighbor_count = 0
             for infected_other in infected_others:
-                if self.distance(infected_other.pos) < radius:
+                if self.distance(infected_other.pos) <= radius:
                     infected_neighbor_count += 1
-            if sum(
-                [1 for x in np.random.random(infected_neighbor_count)
-                 if x < self.infection_probability]
-                 ) > 0:
-                self.state = "infected"
-                logging.info("Infected!")
-                self.color = [.85, .07, .23, 1]
-                with lock:
-                    self.simulation.infected += 1
-                self.simulation.sum_infected(1)
-                with lock:
-                    self.simulation.healthy -= 1
-                self.simulation.sum_healthy(-1)
-                self.speed = uniform(0.3, 0.8)
+            if infected_neighbor_count > 0:
+                infected = sum(
+                    [1 for x in np.random.random(
+                        infected_neighbor_count
+                        ) if x < self.infection_probability])
+                if infected > 0:
+                    self.state = "infected"
+                    logging.info("Infected!")
+                    self.color = [.85, .07, .23, 1]
+                    with lock:
+                        self.simulation.infected += 1
+                    self.simulation.sum_infected(1)
+                    with lock:
+                        self.simulation.healthy -= 1
+                    self.simulation.sum_healthy(-1)
+                    self.speed = uniform(0.3, 0.8)
+                else:
+                    logging.info(f"Contact with {infected_neighbor_count} \
+infected neighbors but no infection.")
