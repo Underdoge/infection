@@ -8,8 +8,8 @@ label at the bottom. Pressing the buttons adds small colored squares to the
 canvas.
 
 '''
-from classes.menu import Menu
-from classes.individual import Individual
+from simulation.util.menu import Menu
+from simulation.util.individual import Individual
 import logging
 from threading import enumerate, Lock
 from concurrent.futures import ThreadPoolExecutor
