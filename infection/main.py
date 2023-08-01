@@ -1,4 +1,4 @@
-from simulation.simulation import Simulation
+from util.simulation import Simulation
 
 
 if __name__ == '__main__':
