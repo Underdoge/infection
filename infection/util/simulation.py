@@ -49,10 +49,6 @@ class Simulation(App):
     def infected(self, infected_number):
         self._infected = infected_number
 
-    def sum_infected(self, infected_number):
-        self.menu.lbl_value_infected.text = str(
-            int(self.menu.lbl_value_infected.text) + infected_number)
-
     @infected.deleter
     def infected(self):
         self._infected = 0
@@ -64,10 +60,6 @@ class Simulation(App):
     @healthy.setter
     def healthy(self, healthy_number):
         self._healthy = healthy_number
-
-    def sum_healthy(self, healthy_number):
-        self.menu.lbl_value_healthy.text = str(
-            int(self.menu.lbl_value_healthy.text) + healthy_number)
 
     @healthy.deleter
     def healthy(self):
@@ -97,6 +89,18 @@ class Simulation(App):
     def population(self):
         self._population = []
 
+    def safe_sum_healthy(self, healthy_number):
+        with lock:
+            self.healthy += 1
+            self.menu.lbl_value_healthy.text = str(
+                int(self.menu.lbl_value_healthy.text) + healthy_number)
+
+    def safe_sum_infected(self, infected_number):
+        with lock:
+            self.infected -= 1
+            self.menu.lbl_value_infected.text = str(
+                int(self.menu.lbl_value_infected.text) + infected_number)
+
     def reset_population(self, *kwargs):
         self.menu.lbl_value_population.text = "0"
         self.menu.lbl_value_healthy.text = "0"
@@ -120,8 +124,7 @@ class Simulation(App):
             for x in range(count):
                 coordinate = ((uniform(0, self.layout.width - 20),
                                uniform(self.menu.height, self.layout.height)))
-                individual = Individual(size=(20, 20),
-                                        pos=coordinate,
+                individual = Individual(pos=coordinate,
                                         text="",
                                         color=[0, .3, .7, 1],
                                         simulation=self)
@@ -141,8 +144,7 @@ class Simulation(App):
             for x in range(count):
                 coordinate = ((uniform(0, self.layout.width - 20),
                                uniform(self.menu.height, self.layout.height)))
-                individual = Individual(size=(20, 20),
-                                        pos=coordinate,
+                individual = Individual(pos=coordinate,
                                         text="",
                                         color=[.85, .07, .23, 1],
                                         simulation=self)
