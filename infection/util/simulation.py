@@ -202,14 +202,16 @@ class Simulation(App):
 
     def update(self, dt):
         """ Kivy method used to update the simulation on each cycle.
-            It uses the thread pool to spawn threads to control the infection
-            state and movement of each individual in the simulation.
+            It uses the thread pool in self.thread_pool to spawn threads to
+            control the infection state and movement of each individual in
+            the simulation.
             To control the infection state, the "infection" method of each
             Individual is invoked in a thread, providing a List of the
             currently infected individuals, and the radius of infection.
             To control the movement, the "move" method of each Individual is
             invoked in a thread, providing an instance of the main simulation
-            so the individual can calculate its position in the canvas.
+            so the individual can calculate its position in the canvas and
+            determine when it has to change direction.
 
         Args:
             dt (Float): Internal Kivy property used to update the app on each
