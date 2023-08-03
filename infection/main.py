@@ -1,5 +1,5 @@
 """ This is the main module where the simulation class is loaded
-    and executed do launch the app.
+    and the Simulation App is launched.
 """
 from util.simulation import Simulation
 

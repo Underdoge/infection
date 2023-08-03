@@ -1,4 +1,4 @@
-""" This module defines the individual class and all of its properties
+""" This module defines the Individual class and all of its properties
     and methods.
 """
 import numpy as np
@@ -17,25 +17,33 @@ logging.basicConfig(level=10, format="%(threadName)s:%(message)s")
 
 
 class Individual(ButtonBehavior, Label):
-    """ This is the definition of the individual class. It inherits from the
-        ButtonBehavior And Label Kivy classes.
+    """ This is the definition of the Individual class. It inherits from the
+        ButtonBehavior and Label Kivy classes.
 
     Args:
         ButtonBehavior: The button behavior class is used to provide a
         circular Button interface that is easy to manipulate.
-        Label: The Label Class is not really used, it is  only inherited to
+        Label: The Label Class is not used, it is only inherited to
         match the Button class definition.
 
     Returns:
         Individual: An instance of the Indivudual class.
     """
 
-    """ The following direction_x, direction_y, and direction properties are
+    """ The following direction_x, direction_y, and direction variables are
         Kivy properties required to track the position of the individual
         in the canvas. These are the only Kivy properties used because of
         their flexibility and automatic reference. The program will not work
         if regular Python properties are used. For more information visit
         https://kivy.org/doc/stable/api-kivy.properties.html#kivy.properties.ReferenceListProperty
+
+        direction_x: Kivy NumericProperty that stores the direction in the
+        'x' axis. Initialized to 0.
+        direction_y: Kivy NumericProperty that stores the direction in the
+        'y' axis. Initialized to 0.
+        direction: Kivy ReferenceListProperty linked to the direction_x
+        and direction_y Kivy properties, to update its value automatically
+        whenever either of them changes, and vice versa.
     """
     direction_x = NumericProperty(0)
     direction_y = NumericProperty(0)
@@ -45,30 +53,27 @@ class Individual(ButtonBehavior, Label):
         """ This method initializes the properties of the Individual class.
 
         Properties:
-            size: Tuple Property that stores two integers to see the size of
+            size: Tuple property that stores two integers as the size of
             the individual in the canvas. (20, 20) by default.
             simulation: To store the instance of the simulation class.
-            infection_robability: Float property with a value from 0 to 1 that
-            determines how likely is an individual to get infected.
-            recovered: Boolean variable Used to track when the individual has
-            recovered from an infection. False by default. True when he has
+            infection_probability: Float property with a value from 0 to 1 that
+            determines how likely an individual is to get infected.
+            recovered: Boolean property used to track when the individual has
+            recovered from an infection. False by default. True when it has
             recovered from an infection. And individual that has recovered
-            from an infection Cano longer get infected.
+            from an infection can no longer get infected.
             speed: Float property with a value from 0 to 1 that determines
             the speed of the individual in the canvas.
             time_infected: Integer property that tracks for how many cycles
-            the individual has been infected. After 2000 cycles they individual
-            recovers.
-            cooldown: Integer property the tracks how many cycles have passed
-            after the last infection evaluation, used to avoid multiple
-            evaluations with the same individual. 10 cycles must pass after
+            the individual has been infected. After 2000 cycles the individual
+            recovers, and can no longer get infected.
+            cooldown: Integer property that tracks how many cycles have passed
+            after the last infection evaluation. 10 cycles must pass after
             the last evaluation to avoid evaluating against the same individual
-            multiple times when crossing paths. In the future maybe this could
-            be replaced with an individual id to keep track of the last
-            evaluated individual.
-            state: String property that tracks the infections that is of the
-            individual. "Healthy" by default, set to "infected" when there's
-            an infection.
+            multiple times after crossing paths.
+            state: String property that tracks the infection state of the
+            individual. "healthy" by default, set to "infected" when the
+            individual becomes infected.
 
         Args:
             simulation: Instance of the simulation class to be able to access
@@ -138,11 +143,11 @@ class Individual(ButtonBehavior, Label):
 
     def distance(self, coord):
         """ This is a simple formula to calculate the ecludian distance
-            between the indivdual's current coordinate (self.pos) and a
+            between the individual's current coordinate (self.pos) and a
             second individual's coordinate (coord) in the canvas.
 
         Args:
-            coord (kivy.properties.ObservableReferenceList): 
+            coord (kivy.properties.ObservableReferenceList):
                 The position of the second individual to measure the distance.
 
         Returns:
@@ -182,8 +187,8 @@ class Individual(ButtonBehavior, Label):
             time_infected property is increased by one, and if
             time_infected has reached 2000:
             - the individual is marked as recovered so it can't get reinfected
-            - its status is marked as "healthy"
-            - its color is set back to blue
+            - its status is marked as "healthy" again
+            - its color is set to green
             - the simulation's healthy individual count is increased by one and
               the infected individual count is decreased by one, using the
               simulation's safe_sum_healthy and safe_sum_infected
@@ -198,8 +203,8 @@ class Individual(ButtonBehavior, Label):
             neighbors, a formula is used to randomly calculate if the
             individual should get infected based on the infection_probability
             and the number of infected neighbors, and the result is stored in
-            the infected variable.
-            If infected is greater than 1 it means the individual was infected:
+            the "infected" variable.
+            If "infected" is greater than 1, the individual gets infected:
             - its status is marked as "infected"
             - its color is set to red
             - the simulation's healthy individual count is decreased by one and
@@ -209,13 +214,15 @@ class Individual(ButtonBehavior, Label):
             - the speed of the individual is recalculated randomly with
               "uniform" with a value between .3 and .8 which would be slower
               than a healthy individual.
-            If infected is not greater than 1 it means the individual was NOT
-            infected and the cooldown property is set to 10.
+            If "infected" is not greater than 1 it means the individual was NOT
+            infected, and the cooldown property is set to 10.
 
         Args:
             infected_others (List): A list with all the infected individuals in
                                     the simulation.
-            radius (Integer): The distance within an infection can occurr.
+            radius (Integer): Distance that determines how close a healthy
+                              individual needs to be to an infected one to get
+                              infected.
         """
         if self.recovered:
             pass
