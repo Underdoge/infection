@@ -71,7 +71,7 @@ class Individual(ButtonBehavior, Label):
             after the last infection evaluation. 10 cycles must pass after
             the last evaluation to avoid evaluating against the same individual
             multiple times after crossing paths.
-            state: String property that tracks the infection state of the
+            status: String property that tracks the infection status of the
             individual. "healthy" by default, set to "infected" when the
             individual becomes infected.
 
@@ -85,21 +85,21 @@ class Individual(ButtonBehavior, Label):
         super(Individual, self).__init__(**kwargs)
         self.size = (20, 20)
         self.simulation = simulation
-        self.infection_probability = float(
+        self._infection_probability = float(
             simulation.menu.lbl_sldr_infection_probability.text)
-        self.recovered = False
-        self.speed = 0
-        self.time_infected = 0
-        self.cooldown = 0
-        self.state = "healthy"
+        self._recovered = False
+        self._speed = 0
+        self._time_infected = 0
+        self._cooldown = 0
+        self._status = "healthy"
 
     @property
-    def state(self):
-        return self._state
+    def status(self):
+        return self._status
 
-    @state.setter
-    def state(self, state):
-        self._state = state
+    @status.setter
+    def status(self, status):
+        self._status = status
 
     @property
     def time_infected(self):
@@ -183,7 +183,7 @@ class Individual(ButtonBehavior, Label):
             If the individual is during a cool down, meaning the cooldown
             property is greater than zero, then the cooldown property is
             simply decreased by 1.
-            If the state of the individual is "infected", then the
+            If the status of the individual is "infected", then the
             time_infected property is increased by one, and if
             time_infected has reached 2000:
             - the individual is marked as recovered so it can't get reinfected
@@ -196,7 +196,7 @@ class Individual(ButtonBehavior, Label):
             - the speed of the individual is recalculated randomly with
               "uniform" with a value between .5 and .9 which would be faster
               than an infected individual.
-            If the state of the individual is "healthy", the provided
+            If the status of the individual is "healthy", the provided
             infected_other list is iterated and the infected_neighbor_count
             variable is used to store the number of infected individuals
             within the provided radius. If there's one or more infected
@@ -228,12 +228,12 @@ class Individual(ButtonBehavior, Label):
             pass
         elif self.cooldown > 0:
             self.cooldown -= 1
-        elif self.state == "infected":
+        elif self.status == "infected":
             self.time_infected += 1
             if self.time_infected == 2000:
                 self.recovered = True
                 logging.info("Recovered!")
-                self.state = "healthy"
+                self.status = "healthy"
                 self.color = [0, .5, 0, 1]
                 self.simulation.safe_sum_healthy(1)
                 self.simulation.safe_sum_infected(-1)
@@ -249,7 +249,7 @@ class Individual(ButtonBehavior, Label):
                         infected_neighbor_count
                         ) if x < self.infection_probability])
                 if infected > 0:
-                    self.state = "infected"
+                    self.status = "infected"
                     logging.info("Infected!")
                     self.color = [.85, .07, .23, 1]
                     self.simulation.safe_sum_infected(1)

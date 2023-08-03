@@ -1,6 +1,7 @@
 """ This module defines the Simulation class and all of its properties
     and methods. This is the main class that controls the simulation.
 """
+from decorators.debugging_decorator import debugging_decorator
 from util.menu import Menu
 from util.individual import Individual
 import logging
@@ -103,6 +104,7 @@ class Simulation(App):
     def population(self):
         self._population = []
 
+    @debugging_decorator
     def safe_sum_healthy(self, healthy_number):
         """ Method that safely increases or decreases the healthy individual
             count, using "with lock" to avoid race condition. It also updates
@@ -116,7 +118,9 @@ class Simulation(App):
             self.healthy += healthy_number
             self.menu.lbl_value_healthy.text = str(
                 int(self.menu.lbl_value_healthy.text) + healthy_number)
+        return self.healthy
 
+    @debugging_decorator
     def safe_sum_infected(self, infected_number):
         """ Method that safely increases or decreases the infected individual
             count, using "with lock" to avoid race condition. It also updates
@@ -130,7 +134,9 @@ class Simulation(App):
             self.infected += infected_number
             self.menu.lbl_value_infected.text = str(
                 int(self.menu.lbl_value_infected.text) + infected_number)
+        return self.infected
 
+    @debugging_decorator
     def reset_population(self, *largs):
         """ Method that resets all the simulation's properties to their
             initial states and values.
@@ -146,7 +152,9 @@ class Simulation(App):
         del self.healthy
         del self.infected
         self.layout.canvas.clear()
+        return self.population
 
+    @debugging_decorator
     def add_healthy(self, number, *largs):
         """ Method that adds new healthy individuals to the simulation. The
             number of individuals added is determined by the provided "number"
@@ -172,7 +180,9 @@ class Simulation(App):
                 individual.speed = uniform(0.5, 0.9)
                 individual.direction = Vector(4, 0).rotate(randint(0, 360))
                 self.population.append(individual)
+                return self.healthy
 
+    @debugging_decorator
     def add_infected(self, number, *largs):
         """ Method that adds new infected individuals to the simulation. The
             number of individuals added is determined by the provided "number"
@@ -195,10 +205,11 @@ class Simulation(App):
                                         simulation=self)
                 logging.info(f"New infected individual with \
 {individual.infection_probability} infection probability.")
-                individual.state = "infected"
+                individual._status = "infected"
                 individual.speed = uniform(0.3, 0.6)
                 individual.direction = Vector(4, 0).rotate(randint(0, 360))
                 self.population.append(individual)
+                return self.infected
 
     def update(self, dt):
         """ Kivy method used to update the simulation on each cycle.
@@ -222,10 +233,10 @@ class Simulation(App):
             executor.submit(
                 self.population[i].infection(
                     list(filter(
-                        lambda x: x.state == "infected",
+                        lambda x: x.status == "infected",
                         self.population[:i]))+list(
                             filter(
-                                lambda x: x.state == "infected",
+                                lambda x: x.status == "infected",
                                 self.population[i+1:])), 10))
         for individual in self.population:
             executor.submit(individual.move(self))
