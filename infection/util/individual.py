@@ -57,7 +57,7 @@ class Individual(ButtonBehavior, Label):
             the individual in the canvas. (20, 20) by default.
             simulation: To store the instance of the simulation class.
             infection_probability: Float property with a value from 0 to 1 that
-            determines how likely an individual is to get infected.
+            determines how likely is an individual to get infected.
             recovered: Boolean property used to track when the individual has
             recovered from an infection. False by default. True when it has
             recovered from an infection. And individual that has recovered
