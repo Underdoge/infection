@@ -4,14 +4,14 @@
 from decorators.debugging_decorator import debugging_decorator
 from util.menu import Menu
 from util.individual import Individual
-import logging
 from threading import enumerate, Lock
 from concurrent.futures import ThreadPoolExecutor
+from random import randint, uniform
 from kivy.uix.boxlayout import BoxLayout
 from kivy.app import App
-from random import randint, uniform
 from kivy.vector import Vector
 from kivy.clock import Clock
+import logging
 
 lock = Lock()
 logging.basicConfig(level=10, format="%(threadName)s:%(message)s")
@@ -166,7 +166,7 @@ class Simulation(App):
         """
         self.menu.lbl_value_population.text = str(
             int(self.menu.lbl_value_population.text) + number)
-        self.safe_sum_healthy(1)
+        self.safe_sum_healthy(number)
         with self.layout.canvas:
             for x in range(number):
                 coordinate = ((uniform(0, self.layout.width - 20),
@@ -194,7 +194,7 @@ class Simulation(App):
         """
         self.menu.lbl_value_population.text = str(
             int(self.menu.lbl_value_population.text) + number)
-        self.safe_sum_infected(1)
+        self.safe_sum_infected(number)
         with self.layout.canvas:
             for x in range(number):
                 coordinate = ((uniform(0, self.layout.width - 20),
