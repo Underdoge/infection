@@ -1,5 +1,5 @@
 import pytest
-from infection.util.simulation import Simulation
+from simulation import Simulation
 
 
 @pytest.fixture
