@@ -3,7 +3,8 @@
 """
 from decorators.debugging_decorator import debugging_decorator
 from util.menu import Menu
-from util.individual import Individual
+from util.individual import HealthyIndividual, InfectedIndividual
+from util.circular_button import CircularButton
 from threading import enumerate, Lock
 from concurrent.futures import ThreadPoolExecutor
 from random import randint, uniform
@@ -171,15 +172,18 @@ class Simulation(App):
             for x in range(number):
                 coordinate = ((uniform(0, self.layout.width - 20),
                                uniform(self.menu.height, self.layout.height)))
-                individual = Individual(pos=coordinate,
-                                        text="",
-                                        color=[0, .3, .7, 1],
-                                        simulation=self)
+                healthy_individual = HealthyIndividual(simulation=self)
+                circular_button = CircularButton(pos=coordinate,
+                                                 text="",
+                                                 color=[0, .3, .7, 1],
+                                                 simulation=self,
+                                                 individual=healthy_individual)
                 logging.info(f"New healthy individual with \
-{individual.infection_probability} infection probability.")
-                individual.speed = uniform(0.5, 0.9)
-                individual.direction = Vector(4, 0).rotate(randint(0, 360))
-                self.population.append(individual)
+{circular_button.individual.infection_probability} infection probability.")
+                circular_button.speed = uniform(0.5, 0.9)
+                circular_button.direction = Vector(4, 0).rotate(
+                    randint(0, 360))
+                self.population.append(circular_button)
                 return self.healthy
 
     @debugging_decorator
@@ -199,16 +203,19 @@ class Simulation(App):
             for x in range(number):
                 coordinate = ((uniform(0, self.layout.width - 20),
                                uniform(self.menu.height, self.layout.height)))
-                individual = Individual(pos=coordinate,
-                                        text="",
-                                        color=[.85, .07, .23, 1],
-                                        simulation=self)
+                infected_individual = InfectedIndividual(simulation=self)
+                circular_button = CircularButton(
+                    pos=coordinate,
+                    text="",
+                    color=[.85, .07, .23, 1],
+                    simulation=self,
+                    individual=infected_individual)
                 logging.info(f"New infected individual with \
-{individual.infection_probability} infection probability.")
-                individual._status = "infected"
-                individual.speed = uniform(0.3, 0.6)
-                individual.direction = Vector(4, 0).rotate(randint(0, 360))
-                self.population.append(individual)
+{circular_button.individual.infection_probability} infection probability.")
+                circular_button.speed = uniform(0.3, 0.6)
+                circular_button.direction = Vector(4, 0).rotate(
+                    randint(0, 360))
+                self.population.append(circular_button)
                 return self.infected
 
     def update(self, dt):
@@ -231,12 +238,13 @@ class Simulation(App):
         executor = self.thread_pool
         for i in range(0, len(self.population)):
             executor.submit(
-                self.population[i].infection(
+                self.population[i].individual.infection(
+                    self.population[i],
                     list(filter(
-                        lambda x: x.status == "infected",
+                        lambda x: x.individual.status == "infected",
                         self.population[:i]))+list(
                             filter(
-                                lambda x: x.status == "infected",
+                                lambda x: x.individual.status == "infected",
                                 self.population[i+1:])), 10))
         for individual in self.population:
             executor.submit(individual.move(self))
