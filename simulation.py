@@ -19,7 +19,7 @@ logging.basicConfig(level=10, format="%(threadName)s:%(message)s")
 
 
 class Simulation(App):
-    """ This is the definition of the Individual class. It inherits from the
+    """ This is the definition of the Simulation class. It inherits from the
         App Kivy class.
 
     Args:

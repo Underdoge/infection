@@ -2,7 +2,7 @@
     HeallthyIndividual and InfectedIndividual classes and all of their
     properties and methods.
 """
-from abc import ABC
+from abc import ABC, abstractmethod
 import numpy as np
 from random import uniform
 import logging
@@ -15,14 +15,52 @@ class Individual(ABC):
         from the ABC class to make it an abstract class.
     """
 
+    @abstractmethod
     def infection(self):
         """ Abstract method that will control the infection status of the
             individual.
         """
         pass
 
+    @property
+    @abstractmethod
+    def status(self):
+        """ String property used to track the infection status of the
+            individual.
+        """
+        pass
+
+    @property
+    @abstractmethod
+    def simulation(self):
+        """ To store an instance of the simulation class."""
+        pass
+
+    @property
+    @abstractmethod
+    def recovered(self):
+        """ Boolean property used to track when the individual has recovered
+            from an infection.
+        """
+        pass
+
+    @property
+    @abstractmethod
+    def time_infected(self):
+        """ Integer property to track how long the individual has been
+            infected.
+        """
+        pass
+
 
 class HealthyIndividual(Individual):
+    """ This is the definition of the HealthyIndividual class. It inherits
+        from the Individual abstract class.
+
+    Args:
+        Individual (Individual): It inherits from the Individual abstract
+                                 class.
+    """
     def __init__(self, simulation, **kwargs):
         """ This method initializes the properties of the HealthyIndividual
             class. It inherits from the Individual class.
@@ -54,7 +92,7 @@ class HealthyIndividual(Individual):
             HealthyIndividual: An instance of the HealthyIndividual class.
         """
         super(Individual, self).__init__(**kwargs)
-        self.simulation = simulation
+        self._simulation = simulation
         self._infection_probability = float(
             simulation.menu.lbl_sldr_infection_probability.text)
         self._recovered = False
@@ -101,6 +139,14 @@ class HealthyIndividual(Individual):
     @infection_probability.setter
     def infection_probability(self, probability):
         self._infection_probability = probability
+
+    @property
+    def simulation(self):
+        return self._simulation
+
+    @simulation.setter
+    def simulation(self, simulation):
+        self._simulation = simulation
 
     def infection(self, circular_button, infected_others, radius):
         """ Function that controls if the individual will get infected by
@@ -194,6 +240,13 @@ infected neighbors but no infection.")
 
 
 class InfectedIndividual(Individual):
+    """ This is the definition of the InfectedIndividual class. It inherits
+    from the Individual abstract class.
+
+    Args:
+        Individual (Individual): It inherits from the Individual abstract
+                                 class.
+    """
     def __init__(self, simulation, **kwargs):
         """ This method initializes the properties of the InfectedIndividual
             class. It inherits from the Individual class.
@@ -219,7 +272,7 @@ class InfectedIndividual(Individual):
             InfectedIndividual: An instance of the InfectedIndividual class.
         """
         super(Individual, self).__init__(**kwargs)
-        self.simulation = simulation
+        self._simulation = simulation
         self._recovered = False
         self._time_infected = 0
         self._status = "infected"
@@ -247,6 +300,14 @@ class InfectedIndividual(Individual):
     @recovered.setter
     def recovered(self, recovered):
         self._recovered = recovered
+
+    @property
+    def simulation(self):
+        return self._simulation
+
+    @simulation.setter
+    def simulation(self, simulation):
+        self._simulation = simulation
 
     def infection(self, circular_button, infected_others, radius):
         """ Function that controls if the individual is now recovered because
