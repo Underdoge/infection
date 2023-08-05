@@ -210,8 +210,7 @@ class Simulation(App):
                     color=[.85, .07, .23, 1],
                     simulation=self,
                     individual=infected_individual)
-                logging.info(f"New infected individual with \
-{circular_button.individual.infection_probability} infection probability.")
+                logging.info("New infected individual.")
                 circular_button.speed = uniform(0.3, 0.6)
                 circular_button.direction = Vector(4, 0).rotate(
                     randint(0, 360))

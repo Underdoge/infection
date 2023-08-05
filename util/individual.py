@@ -150,11 +150,11 @@ class HealthyIndividual(Individual):
         Args:
             circular_button (CircularButton): The instance of the button
                 containing the individual to change its properties.
-            infected_others (List): A list with all the infected individuals in
-                                    the simulation.
-            radius (Integer): Distance that determines how close a healthy
-                              individual needs to be to an infected one to get
-                              infected.
+            infected_others (List): A list with all the buttons containing
+                infected individuals in the simulation.
+            radius (Integer): Distance that determines how close a button
+                containing a healthy individual needs to be to a button
+                containing infected one to get infected.
         """
         if self.recovered:
             pass
@@ -200,8 +200,6 @@ class InfectedIndividual(Individual):
 
         Properties:
             simulation: To store the instance of the simulation class.
-            infection_probability: Float property with a value from 0 to 1 that
-            determines how likely is an individual to get infected.
             recovered: Boolean property used to track when the individual has
             recovered from an infection. False by default. True when it has
             recovered from an infection. And individual that has recovered
@@ -222,8 +220,6 @@ class InfectedIndividual(Individual):
         """
         super(Individual, self).__init__(**kwargs)
         self.simulation = simulation
-        self._infection_probability = float(
-            simulation.menu.lbl_sldr_infection_probability.text)
         self._recovered = False
         self._time_infected = 0
         self._status = "infected"
@@ -251,14 +247,6 @@ class InfectedIndividual(Individual):
     @recovered.setter
     def recovered(self, recovered):
         self._recovered = recovered
-
-    @property
-    def infection_probability(self):
-        return self._infection_probability
-
-    @infection_probability.setter
-    def infection_probability(self, probability):
-        self._infection_probability = probability
 
     def infection(self, circular_button, infected_others, radius):
         """ Function that controls if the individual is now recovered because

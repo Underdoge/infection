@@ -17,13 +17,14 @@ logging.basicConfig(level=10, format="%(threadName)s:%(message)s")
 
 class CircularButton(ButtonBehavior, Label):
     """ This is the definition of the CircularButton class. It inherits
-        from the ButtonBehavior and Label Kivy classes.
+        from the ButtonBehavior and Label Kivy classes, and represents an
+        individual in the canvas.
 
     Args:
         ButtonBehavior: The button behavior class is used to provide a
         Button interface that is easy to manipulate.
-        Label: The Label Class is not used, it is only inherited to
-        match the Button class definition.
+        Label: Contains the label of the button, but its text is set to
+            "" in this case.
     """
 
     """ The following direction_x, direction_y, and direction variables are
