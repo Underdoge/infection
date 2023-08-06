@@ -21,10 +21,11 @@ class CircularButton(ButtonBehavior, Label):
         individual in the canvas.
 
     Args:
-        ButtonBehavior: The button behavior class is used to provide a
-        Button interface that is easy to manipulate.
-        Label: Contains the label of the button, but its text is set to
-            "" in this case.
+        ButtonBehavior: It inherits from the ButtonBehavior class to provide
+                        a graphical element to represent an individual in the
+                        canvas and is easy to manipulate.
+        Label: Inherits from the Label class, but its text is set to "" in
+               this case.
     """
 
     """ The following direction_x, direction_y, and direction variables are
@@ -50,10 +51,8 @@ class CircularButton(ButtonBehavior, Label):
         """ This method initializes the properties of the CircularButton class.
 
         Properties:
-            size: Tuple property that stores two integers as the size of
-            the button in the canvas. (20, 20) by default.
-            individual: Stores an instance of a HealthyIndividual or
-            InfectedIndividual classes.
+            individual: Stores an instance of a HealthyIndividual class or
+            an InfectedIndividual class.
             simulation: To store the instance of the simulation class.
             speed: Float property with a value from 0 to 1 that determines
             the speed of the button in the canvas.
@@ -68,7 +67,6 @@ class CircularButton(ButtonBehavior, Label):
             CircularButton: An instance of the CircularButton class.
         """
         super(CircularButton, self).__init__(**kwargs)
-        self.size = (20, 20)
         self._simulation = simulation
         self._individual = individual
         self._speed = 0

@@ -49,7 +49,7 @@ class Menu(BoxLayout):
 
         Args:
             simulation (Simulation): An instance of the simulation's class to
-            access its methods and control the imulation.
+            access its methods and control the simulation.
         """
         super(Menu, self).__init__(**kwargs)
         self.lbl_infection_probability = Label(text='Infection\nProbability:')

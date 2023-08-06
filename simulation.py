@@ -16,6 +16,10 @@ import logging
 
 lock = Lock()
 logging.basicConfig(level=10, format="%(threadName)s:%(message)s")
+INDIVIDUAL_SIZE = 20
+HEALTHY_COLOR = [0, .3, .7, 1]
+INFECTED_COLOR = [.85, .07, .23, 1]
+RECOVERED_COLOR = [0, .5, 0, 1]
 
 
 class Simulation(App):
@@ -23,7 +27,7 @@ class Simulation(App):
         App Kivy class.
 
     Args:
-        App (App): The Kivy App class.
+        App (App): It onherits from the Kivy App class.
     """
     def __init__(self, **kwargs):
         """ This method initializes the properties of the Simulation class.
@@ -37,17 +41,31 @@ class Simulation(App):
             in the simulation. Initialized to 0.
             infected: Integer that keeps account of the infected individuals
             in the simulation. Initialized to 0.
+            infection_radius: Distance that determines how close a healthy
+                              individual needs to be to an infected one to get
+                              infected. Ignored in the InfectedIndividual
+                              class. Initialized to INDIVIDUAL_SIZE.
+            healthy_color: The color of a healthy individual in the canvas.
+                           Set to HEALTHY_COLOR.
+            infected_color: The color of an infected individual in the canvas.
+                           Set to INFECTED_COLOR.
+            recovered_color: The color of an infected individual in the canvas.
+                           Set to RECOVERED_COLOR.
 
         Returns:
             Simulation: An instance of the simulation class.
         """
         super(Simulation, self).__init__(**kwargs)
-        self.thread_pool = ThreadPoolExecutor(
+        self._thread_pool = ThreadPoolExecutor(
              max_workers=200)
-        self.threads = len(enumerate())
-        self.population = []
-        self.healthy = 0
-        self.infected = 0
+        self._threads = len(enumerate())
+        self._population = []
+        self._healthy = 0
+        self._infected = 0
+        self._infection_radius = INDIVIDUAL_SIZE
+        self._healthy_color = HEALTHY_COLOR
+        self._infected_color = INFECTED_COLOR
+        self._recovered_color = RECOVERED_COLOR
 
     @property
     def thread_pool(self):
@@ -104,6 +122,38 @@ class Simulation(App):
     @population.deleter
     def population(self):
         self._population = []
+
+    @property
+    def infection_radius(self):
+        return self._infection_radius
+
+    @infection_radius.setter
+    def infection_radius(self, infection_radius):
+        self._infection_radius = infection_radius
+
+    @property
+    def healthy_color(self):
+        return self._healthy_color
+
+    @healthy_color.setter
+    def healthy_color(self, healthy_color):
+        self._healthy_color = healthy_color
+
+    @property
+    def infected_color(self):
+        return self._infected_color
+
+    @infected_color.setter
+    def infected_color(self, infected_color):
+        self._infected_color = infected_color
+
+    @property
+    def recovered_color(self):
+        return self._recovered_color
+
+    @recovered_color.setter
+    def recovered_color(self, recovered_color):
+        self._recovered_color = recovered_color
 
     @debugging_decorator
     def safe_sum_healthy(self, healthy_number):
@@ -170,12 +220,15 @@ class Simulation(App):
         self.safe_sum_healthy(number)
         with self.layout.canvas:
             for x in range(number):
-                coordinate = ((uniform(0, self.layout.width - 20),
+                coordinate = ((uniform(0, self.layout.width - INDIVIDUAL_SIZE),
                                uniform(self.menu.height, self.layout.height)))
-                healthy_individual = HealthyIndividual(simulation=self)
-                circular_button = CircularButton(pos=coordinate,
+                healthy_individual = HealthyIndividual(self, float(
+                    self.menu.lbl_sldr_infection_probability.text))
+                circular_button = CircularButton(size=(INDIVIDUAL_SIZE,
+                                                       INDIVIDUAL_SIZE),
+                                                 pos=coordinate,
                                                  text="",
-                                                 color=[0, .3, .7, 1],
+                                                 color=HEALTHY_COLOR,
                                                  simulation=self,
                                                  individual=healthy_individual)
                 logging.info(f"New healthy individual with \
@@ -201,13 +254,14 @@ class Simulation(App):
         self.safe_sum_infected(number)
         with self.layout.canvas:
             for x in range(number):
-                coordinate = ((uniform(0, self.layout.width - 20),
+                coordinate = ((uniform(0, self.layout.width - INDIVIDUAL_SIZE),
                                uniform(self.menu.height, self.layout.height)))
                 infected_individual = InfectedIndividual(simulation=self)
                 circular_button = CircularButton(
+                    size=(INDIVIDUAL_SIZE, INDIVIDUAL_SIZE),
                     pos=coordinate,
                     text="",
-                    color=[.85, .07, .23, 1],
+                    color=INFECTED_COLOR,
                     simulation=self,
                     individual=infected_individual)
                 logging.info("New infected individual.")
@@ -223,8 +277,9 @@ class Simulation(App):
             control the infection state and movement of each individual in
             the simulation.
             To control the infection state, the "infection" method of each
-            Individual is invoked in a thread, providing a List of the
-            currently infected individuals, and the radius of infection.
+            Individual is invoked in a thread, providing it the button
+            containing the individual, a List of the currently infected
+            individuals, and the radius of infection.
             To control the movement, the "move" method of each Individual is
             invoked in a thread, providing an instance of the main simulation
             so the individual can calculate its position in the canvas and
@@ -244,7 +299,8 @@ class Simulation(App):
                         self.population[:i]))+list(
                             filter(
                                 lambda x: x.individual.status == "infected",
-                                self.population[i+1:])), 10))
+                                self.population[i+1:])),
+                    self.infection_radius))
         for individual in self.population:
             executor.submit(individual.move(self))
         if len(enumerate()) != self.threads:
