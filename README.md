@@ -56,3 +56,7 @@ pytest -v
 #
 # Requirements
 - Python 3.6 or greater
+- Git (to clone the repo)
+#
+# Unsupported
+- The use of the Windows Subsystem for Linux (WSL) is not supported because it provides very poor performance for the Kivy module and causes several graphical glitches, however, you can run this program in Windows with Python natively without any issues.
