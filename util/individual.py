@@ -70,6 +70,7 @@ class HealthyIndividual(Individual):
         Individual (Individual): It inherits from the Individual abstract
                                  class.
     """
+
     def __init__(self, simulation, infection_probability, **kwargs):
         """ This method initializes the properties of the HealthyIndividual
             class. It inherits from the Individual class.
@@ -259,6 +260,7 @@ class InfectedIndividual(Individual):
         Individual (Individual): It inherits from the Individual abstract
                                  class.
     """
+
     def __init__(self, simulation, **kwargs):
         """ This method initializes the properties of the InfectedIndividual
             class. It inherits from the Individual class.

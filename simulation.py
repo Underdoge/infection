@@ -30,6 +30,7 @@ class Simulation(App):
     Args:
         App (App): It onherits from the Kivy App class.
     """
+
     def __init__(self, **kwargs):
         """ This method initializes the properties of the Simulation class.
 
@@ -58,7 +59,7 @@ class Simulation(App):
         """
         super(Simulation, self).__init__(**kwargs)
         self._thread_pool = ThreadPoolExecutor(
-             max_workers=200)
+            max_workers=200)
         self._threads = len(enumerate())
         self._population = []
         self._healthy = 0
@@ -198,7 +199,7 @@ class Simulation(App):
         self.menu.lbl_value_infected.text = "0"
         self.thread_pool.shutdown()
         self.thread_pool = ThreadPoolExecutor(
-             max_workers=200)
+            max_workers=200)
         del self.threads
         del self.population
         del self.healthy

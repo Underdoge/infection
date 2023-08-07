@@ -16,6 +16,7 @@ class Menu(BoxLayout):
         BoxLayout (BoxLayout): Kivy layout class that arranges its children
         items in a vertical or horizontal box.
     """
+
     def __init__(self, simulation, **kwargs):
         """ This method initializes the properties of the Menu class.
 
@@ -77,7 +78,7 @@ class Menu(BoxLayout):
                                           simulation.add_healthy, 1))
         self.btn_add_infected = Button(text='    +1\nInfected',
                                        on_press=partial(
-                                          simulation.add_infected, 1))
+                                           simulation.add_infected, 1))
         self.btn_reset = Button(text='Reset',
                                 on_press=partial(
                                     simulation.reset_population))
