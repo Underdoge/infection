@@ -1,0 +1,10 @@
+# pre-commit run --all-files
+repos:
+-   repo: https://github.com/pre-commit/mirrors-autopep8
+    rev: ''
+    hooks:
+    -   id: autopep8
+-   repo: https://github.com/pycqa/flake8
+    rev: ''
+    hooks:
+    -   id: flake8
