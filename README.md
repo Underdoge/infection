@@ -1,6 +1,6 @@
 # Infection
 ## Simulation Model of a Disease spreading throughout a population
-### Final Project for the Código Facilito's 2023 Advanced Python Bootcamp
+## Final Project for the Código Facilito's 2023 Advanced Python Bootcamp
 #
 # Installation
 Open up a Terminal (Linux/macOS) or PowerShell (Windows) and enter the following commands:
