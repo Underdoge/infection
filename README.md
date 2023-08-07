@@ -47,8 +47,8 @@ pytest -v
 ## Infection Probability
 - The Infection Probability value determines how likely a healthy individual is to get infected upon contact with an infected one.
 - Adjust the Infection Probability slider to the desired value, the default is 0.2.
-- Only new individuals will be created with the selected value, previously created individuals are not affected when changing the slider vaslue.
-- Meaning each individual keeps its own infection probability throughout the simulation.
+- Only new individuals will be created with the selected value, previously created individuals are not affected when changing the slider value.
+- In other words, each individual keeps its own infection probability throughout the simulation.
 ## Adding or Removing Individuals 
 - Press the +1 Healthy button to add a new healthy individual to the simulation.
 - Press the +1 Infected button to add a new infected individual to the simulation.
