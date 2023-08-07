@@ -12,11 +12,12 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.app import App
 from kivy.vector import Vector
 from kivy.clock import Clock
+from kivy.core.window import Window
 import logging
 
 lock = Lock()
 logging.basicConfig(level=10, format="%(threadName)s:%(message)s")
-INDIVIDUAL_SIZE = 20
+INDIVIDUAL_SIZE = (Window.size)[1] * .035
 HEALTHY_COLOR = [0, .3, .7, 1]
 INFECTED_COLOR = [.85, .07, .23, 1]
 RECOVERED_COLOR = [0, .5, 0, 1]
