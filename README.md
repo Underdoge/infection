@@ -2,6 +2,8 @@
 ## Simulation Model of a Disease spreading throughout a population
 ## Final Project for the Código Facilito's 2023 Advanced Python Bootcamp
 #
+![infection](https://github.com/Underdoge/pf_bpa_cf_privado/assets/12192446/8463fb75-2873-4556-bc5f-5ac6a7b62b29)
+
 # Installation
 Open up a Terminal (Linux/macOS) or PowerShell (Windows) and enter the following commands:
 ### Cloning the repository
