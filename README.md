@@ -3,7 +3,7 @@
 ### Final Project for the Código Facilito's 2023 Advanced Python Bootcamp
 #
 # Installation
-- Open up a Terminal (Linux/macOS) or PowerShell (Windows) and enter the following commands:
+Open up a Terminal (Linux/macOS) or PowerShell (Windows) and enter the following commands:
 ### Cloning the repository
 ```sh
 git clone https://github.com/underdoge/infection
@@ -30,13 +30,13 @@ pip install -r requirements_macos_linux.txt
 ```powershell
 pip install -r requirements_win.txt
 ```
-
-## Running the program
+#
+# Running the program
 ```sh
 python main.py
 ```
-
-## Running the unit tests
+#
+# Running the unit tests
 ```sh
 pytest -v
 ```
