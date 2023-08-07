@@ -1,7 +1,7 @@
 # Infection
 ## Simulation Model of a Disease spreading throughout a population
 ## Final Project for the Código Facilito's 2023 Advanced Python Bootcamp
-#<img src="https://github.com/Underdoge/infection/assets/12192446/b316219d-b1a3-4d6c-a8ab-58f662da68db" width="800px" height="600px">
+<img src="https://github.com/Underdoge/infection/assets/12192446/b316219d-b1a3-4d6c-a8ab-58f662da68db" width="800px" height="600px">
 
 # Installation
 Open up a Terminal (Linux/macOS) or PowerShell (Windows) and enter the following commands:
