@@ -4,7 +4,7 @@
 <img src="https://github.com/Underdoge/infection/assets/12192446/b316219d-b1a3-4d6c-a8ab-58f662da68db" width="800px" height="600px">
 
 # Installation
-Open up a Terminal (Linux/macOS) or PowerShell (Windows) and enter the following commands:
+Open up a Terminal (macOS/Linux) or PowerShell (Windows) and enter the following commands:
 ### Cloning the repository
 ```sh
 git clone https://github.com/underdoge/infection
@@ -19,7 +19,7 @@ python -m venv venv
 ```sh
 source venv/bin/activate
 ```
-### Activating the virtual environment on Windows
+### Activating the virtual environment on Windows (PowerShell)
 ```powershell
 .\venv\Scripts\Activate.ps1
 ```
@@ -27,7 +27,7 @@ source venv/bin/activate
 ```sh
 pip install -r requirements_macos_linux.txt
 ```
-### Installing on Windows
+### Installing on Windows (PowerShell)
 ```powershell
 pip install -r requirements_win.txt
 ```
