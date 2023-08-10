@@ -4,7 +4,7 @@
 <img src="https://github.com/Underdoge/infection/assets/12192446/b316219d-b1a3-4d6c-a8ab-58f662da68db" width="800px" height="600px">
 
 # Installation
-Open up a Terminal (macOS/Linux) or PowerShell (Windows) and enter the following commands:
+Open up a Terminal (Linux/macOS) or PowerShell (Windows) and enter the following commands:
 ### Cloning the repository
 ```sh
 git clone https://github.com/underdoge/infection
@@ -19,7 +19,7 @@ python -m venv venv
 ```sh
 source venv/bin/activate
 ```
-### Activating the virtual environment on Windows (PowerShell)
+### Activating the virtual environment on Windows
 ```powershell
 .\venv\Scripts\Activate.ps1
 ```
@@ -27,7 +27,7 @@ source venv/bin/activate
 ```sh
 pip install -r requirements_macos_linux.txt
 ```
-### Installing on Windows (PowerShell)
+### Installing on Windows
 ```powershell
 pip install -r requirements_win.txt
 ```
@@ -49,8 +49,11 @@ pytest -v
 - Only new individuals will be created with the selected value, previously created individuals are not affected when changing the slider value.
 - In other words, each individual keeps its own infection probability throughout the simulation.
 ## Adding or Removing Individuals 
-- Press the +1 Healthy button to add a new healthy individual to the simulation.
-- Press the +1 Infected button to add a new infected individual to the simulation.
+- Press the "+1 Healthy" button to add a new healthy individual to the simulation.
+- Press the "+1 Infected" button to add a new infected individual to the simulation.
+- Press the "Healthy Color" button to change the color of new healthy individuals.
+- Press the "Infected Color" button to change the color of new infected individuals.
+- Press the "Recovered Color" button to change the color of new recovered individuals.
 - Press the Reset button to remove all individuals and reset the simulation parameters.
 #
 # Requirements

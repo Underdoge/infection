@@ -72,9 +72,10 @@ class MenuRight(BoxLayout):
         self.btn_healthy_color = Button(text='Healthy\n  Color',
                                         on_press=partial(
                                             self.show_healthy_color_picker))
-        self.btn_infected_color = Button(text='Infected\n   Color',
-                                         on_press=partial(
-                                             self.show_infected_color_picker))
+        self.btn_infected_color = Button(
+            text='Infected\n   Color',
+            on_press=partial(
+                self.show_infected_color_picker))
         self.btn_recovered_color = Button(
             text='Recovered\n     Color',
             on_press=partial(

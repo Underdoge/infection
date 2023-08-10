@@ -2,12 +2,14 @@
     and methods. This is the main class that controls the simulation.
 """
 from decorators.debugging_decorator import debugging_decorator
-from util.menu import Menu
+from util.menu_bottom import MenuBottom
+from util.menu_right import MenuRight
 from util.individual import HealthyIndividual, InfectedIndividual
 from util.circular_button import CircularButton
 from threading import enumerate, Lock
 from concurrent.futures import ThreadPoolExecutor
 from random import randint, uniform
+from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.app import App
 from kivy.vector import Vector
@@ -18,45 +20,31 @@ import logging
 lock = Lock()
 logging.basicConfig(level=10, format="%(threadName)s:%(message)s")
 INDIVIDUAL_SIZE = (Window.size)[1] * .035
-HEALTHY_COLOR = [0, .3, .7, 1]
-INFECTED_COLOR = [.85, .07, .23, 1]
-RECOVERED_COLOR = [0, .5, 0, 1]
 
 
 class Simulation(App):
     """ This is the definition of the Simulation class. It inherits from the
         App Kivy class.
 
-    Args:
-        App (App): It onherits from the Kivy App class.
+    Attributes:
+        thread_pool: A ThreadPoolExecutor instance to spawn new threads
+            as required for the simulation, with a maximum of 200 workers.
+        threads: Integer that keeps the count of the spawned threads.
+        population: List of all the Individuals in the simulation.
+        healthy: Integer that keeps the count of the healthy individuals
+            in the simulation. Initialized to 0.
+        infected: Integer that keeps the count of the infected individuals
+            in the simulation. Initialized to 0.
+        infection_radius: Distance that determines how close a healthy
+            individual needs to be to an infected one to get infected.
+            Ignored in the InfectedIndividual class. Initialized to
+            INDIVIDUAL_SIZE.
+        healthy_color: The color of a healthy individual in the canvas.
+        infected_color: The color of an infected individual in the canvas.
+        recovered_color: The color of an infected individual in the canvas.
     """
 
     def __init__(self, **kwargs):
-        """ This method initializes the properties of the Simulation class.
-
-        Properties:
-            thread_pool: A ThreadPoolExecutor instance to spawn new threads
-            as required for the simulation, with a maximum of 200 workers.
-            threads: Integer that keeps the count of the spawned threads.
-            population: List of all the Individuals in the simulation.
-            healthy: Integer that keeps account of the healthy individuals
-            in the simulation. Initialized to 0.
-            infected: Integer that keeps account of the infected individuals
-            in the simulation. Initialized to 0.
-            infection_radius: Distance that determines how close a healthy
-                              individual needs to be to an infected one to get
-                              infected. Ignored in the InfectedIndividual
-                              class. Initialized to INDIVIDUAL_SIZE.
-            healthy_color: The color of a healthy individual in the canvas.
-                           Set to HEALTHY_COLOR.
-            infected_color: The color of an infected individual in the canvas.
-                           Set to INFECTED_COLOR.
-            recovered_color: The color of an infected individual in the canvas.
-                           Set to RECOVERED_COLOR.
-
-        Returns:
-            Simulation: An instance of the simulation class.
-        """
         super(Simulation, self).__init__(**kwargs)
         self._thread_pool = ThreadPoolExecutor(
             max_workers=200)
@@ -65,9 +53,9 @@ class Simulation(App):
         self._healthy = 0
         self._infected = 0
         self._infection_radius = INDIVIDUAL_SIZE
-        self._healthy_color = HEALTHY_COLOR
-        self._infected_color = INFECTED_COLOR
-        self._recovered_color = RECOVERED_COLOR
+        self._healthy_color = [0, .3, .7, 1]  # check if its in config file
+        self._infected_color = [.85, .07, .23, 1]
+        self._recovered_color = [0, .5, 0, 1]
 
     @property
     def thread_pool(self):
@@ -204,7 +192,9 @@ class Simulation(App):
         del self.population
         del self.healthy
         del self.infected
+        self.layout.clear_widgets()
         self.layout.canvas.clear()
+        self.layout.add_widget(self.menu_right)
         return self.population
 
     @debugging_decorator
@@ -222,15 +212,17 @@ class Simulation(App):
         self.safe_sum_healthy(number)
         with self.layout.canvas:
             for x in range(number):
-                coordinate = ((uniform(0, self.layout.width - INDIVIDUAL_SIZE),
-                               uniform(self.menu.height, self.layout.height)))
+                coordinate = (uniform(
+                    0, self.layout.width -
+                    self.menu_right.width - INDIVIDUAL_SIZE),
+                    uniform(self.menu.height, self.layout.height))
                 healthy_individual = HealthyIndividual(self, float(
                     self.menu.lbl_sldr_infection_probability.text))
                 circular_button = CircularButton(size=(INDIVIDUAL_SIZE,
                                                        INDIVIDUAL_SIZE),
                                                  pos=coordinate,
                                                  text="",
-                                                 color=HEALTHY_COLOR,
+                                                 color=self.healthy_color,
                                                  simulation=self,
                                                  individual=healthy_individual)
                 logging.info(f"New healthy individual with \
@@ -256,14 +248,16 @@ class Simulation(App):
         self.safe_sum_infected(number)
         with self.layout.canvas:
             for x in range(number):
-                coordinate = ((uniform(0, self.layout.width - INDIVIDUAL_SIZE),
-                               uniform(self.menu.height, self.layout.height)))
+                coordinate = (uniform(
+                    0, self.layout.width -
+                    self.menu_right.width - INDIVIDUAL_SIZE),
+                    uniform(self.menu.height, self.layout.height))
                 infected_individual = InfectedIndividual(simulation=self)
                 circular_button = CircularButton(
                     size=(INDIVIDUAL_SIZE, INDIVIDUAL_SIZE),
                     pos=coordinate,
                     text="",
-                    color=INFECTED_COLOR,
+                    color=self.infected_color,
                     simulation=self,
                     individual=infected_individual)
                 logging.info("New infected individual.")
@@ -318,8 +312,12 @@ class Simulation(App):
             contains all the graphical components of the simulation.
         """
         self.root = BoxLayout(orientation='vertical')
-        self.layout = BoxLayout()
-        self.menu = Menu(self, size_hint=(1, 0.2))
+        self.layout = AnchorLayout(anchor_x='right', anchor_y='top')
+        self.menu_right = MenuRight(self,
+                                    orientation='vertical',
+                                    size_hint=(.1, .7))
+        self.layout.add_widget(self.menu_right)
+        self.menu = MenuBottom(size_hint=(1, 0.2))
         self.root.add_widget(self.layout)
         self.root.add_widget(self.menu)
         Clock.schedule_interval(self.update, 1.0 / 60.0)

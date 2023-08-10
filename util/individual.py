@@ -67,40 +67,29 @@ class HealthyIndividual(Individual):
         from the Individual abstract class.
 
     Args:
-        Individual (Individual): It inherits from the Individual abstract
-                                 class.
-    """
-
-    def __init__(self, simulation, infection_probability, **kwargs):
-        """ This method initializes the properties of the HealthyIndividual
-            class. It inherits from the Individual class.
-
-        Properties:
-            simulation: To store the instance of the simulation class.
-            infection_probability: Float property with a value from 0 to 1 that
+        simulation (Simulation): Instance of the Simulation class.
+        infection_probability (Float): A value from 0 to 1 that
             determines how likely is an individual to get infected.
-            recovered: Boolean property used to track when the individual has
+
+    Attributes:
+        simulation: To store the instance of the simulation class.
+        infection_probability: To store the infection_probability.
+        recovered: Boolean property used to track when the individual has
             recovered from an infection. False by default. True when it has
             recovered from an infection. An individual that has recovered
             from an infection can no longer get infected.
-            time_infected: Integer property that tracks for how many cycles
-            the individual has been infected. Once it reaches MAX_TIME_INFECTED
-            the individual recovers.
-            cooldown: Integer property that tracks how many cycles have passed
+        time_infected: Integer property that tracks for how many cycles
+            the individual has been infected. Once it reaches
+            MAX_TIME_INFECTED the individual recovers.
+        cooldown: Integer property that tracks how many cycles have passed
             after the last infection evaluation to avoid evaluating against
             the same individual multiple times after crossing paths. Once it
             reaches MAX_COOLDOWN infection evaluations restart.
-            status: String property that tracks the infection status of the
-            individual. "healthy" by default, set to "infected" when the
-            individual becomes infected.
+        status: String property that tracks the infection status of the
+            individual. "healthy" by default.
+    """
 
-        Args:
-            simulation: Instance of the simulation class to be able to access
-            all the simulation parameters.
-
-        Returns:
-            HealthyIndividual: An instance of the HealthyIndividual class.
-        """
+    def __init__(self, simulation, infection_probability, **kwargs):
         super(Individual, self).__init__(**kwargs)
         self._simulation = simulation
         self._infection_probability = infection_probability
@@ -217,7 +206,7 @@ class HealthyIndividual(Individual):
         logging.info("Recovered!")
 
     def infection(self, circular_button, infected_others, radius):
-        """ Function that controls if the individual will get infected by
+        """ Method that controls if the individual will get infected by
             being around one or more infected individuals in the provided
             infected_others list if they are inside the provided radius,
             or if the individual is now recovered because MAX_TIME_INFECTED
@@ -257,33 +246,21 @@ class InfectedIndividual(Individual):
     from the Individual abstract class.
 
     Args:
-        Individual (Individual): It inherits from the Individual abstract
-                                 class.
-    """
+        simulation (Simulation): Instance of the Simulation class.
 
-    def __init__(self, simulation, **kwargs):
-        """ This method initializes the properties of the InfectedIndividual
-            class. It inherits from the Individual class.
-
-        Properties:
-            simulation: To store the instance of the simulation class.
-            recovered: Boolean property used to track when the individual has
+    Attributes:
+        simulation: To store the instance of the simulation class.
+        recovered: Boolean property used to track when the individual has
             recovered from an infection. False by default. True when it has
             recovered from an infection. And individual that has recovered
             from an infection can no longer get infected.
-            time_infected: Integer property that tracks for how many cycles
+        time_infected: Integer property that tracks for how many cycles
             the individual has been infected.
-            status: String property that tracks the infection status of the
-            individual. "infected" by default, set to "healthy" when the
-            individual recovers.
+        status: String property that tracks the infection status of the
+            individual. "infected" by default.
+    """
 
-        Args:
-            simulation: Instance of the simulation class to be able to access
-            all the simulation parameters.
-
-        Returns:
-            InfectedIndividual: An instance of the InfectedIndividual class.
-        """
+    def __init__(self, simulation, **kwargs):
         super(Individual, self).__init__(**kwargs)
         self._simulation = simulation
         self._recovered = False
@@ -338,7 +315,7 @@ class InfectedIndividual(Individual):
         logging.info("Recovered!")
 
     def infection(self, circular_button, infected_others, radius):
-        """ Function that controls if the individual is now recovered because
+        """ Method that controls if the individual is now recovered because
             MAX_TIME_INFECTED cycles have passed after infection.
 
         Args:

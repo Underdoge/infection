@@ -21,14 +21,13 @@ class CircularButton(ButtonBehavior, Label):
         individual in the canvas.
 
     Args:
-        ButtonBehavior: It inherits from the ButtonBehavior class to provide
-                        a graphical element to represent an individual in the
-                        canvas and is easy to manipulate.
-        Label: Inherits from the Label class, but its text is set to "" in
-               this case.
-    """
+        individual: Instance of a HealthyIndividual or InfectedIndividual
+            classes to control and access its status.
+        simulation: Instance of the simulation class to be able to access
+            all the simulation parameters.
 
-    """ The following direction_x, direction_y, and direction variables are
+    Attributes:
+        The direction_x, direction_y, and direction attributes are
         Kivy properties required to track the position of the button
         in the canvas. These are the only Kivy properties used because of
         their flexibility and automatic reference. The program will not work
@@ -36,36 +35,23 @@ class CircularButton(ButtonBehavior, Label):
         https://kivy.org/doc/stable/api-kivy.properties.html#kivy.properties.ReferenceListProperty
 
         direction_x: Kivy NumericProperty that stores the direction in the
-        'x' axis. Initialized to 0.
+            'x' axis. Initialized to 0.
         direction_y: Kivy NumericProperty that stores the direction in the
-        'y' axis. Initialized to 0.
+            'y' axis. Initialized to 0.
         direction: Kivy ReferenceListProperty linked to the direction_x
-        and direction_y Kivy properties, to update its value automatically
-        whenever either of them changes, and vice versa.
+            and direction_y Kivy properties, to update its value automatically
+            whenever either of them changes, and vice versa.
+        individual: Stores an instance of a HealthyIndividual class or
+            an InfectedIndividual class.
+        simulation: To store the instance of the Simulation class.
+        speed: Float property with a value from 0 to 1 that determines
+            the speed of the button in the canvas.
     """
     direction_x = NumericProperty(0)
     direction_y = NumericProperty(0)
     direction = ReferenceListProperty(direction_x, direction_y)
 
     def __init__(self, individual, simulation, **kwargs):
-        """ This method initializes the properties of the CircularButton class.
-
-        Properties:
-            individual: Stores an instance of a HealthyIndividual class or
-            an InfectedIndividual class.
-            simulation: To store the instance of the simulation class.
-            speed: Float property with a value from 0 to 1 that determines
-            the speed of the button in the canvas.
-
-        Args:
-            individual: Instance of a HealthyIndividual or InfectedIndividual
-            classes to control and access its status.
-            simulation: Instance of the simulation class to be able to access
-            all the simulation parameters.
-
-        Returns:
-            CircularButton: An instance of the CircularButton class.
-        """
         super(CircularButton, self).__init__(**kwargs)
         self._simulation = simulation
         self._individual = individual
@@ -123,5 +109,6 @@ class CircularButton(ButtonBehavior, Label):
         self.pos = (Vector(*self.direction) * self.speed) + self.pos
         if (self.y < sim.menu.height) or (self.top > sim.root.height):
             self.direction_y *= -1
-        if (self.x < 0) or (self.right > sim.root.width):
+        if (self.x < 0) or (
+                self.right > sim.root.width - sim.menu_right.width):
             self.direction_x *= -1
