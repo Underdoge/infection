@@ -1,10 +1,8 @@
 """ The following module is the definition of the MenuBottom class, its
     properties, and its methods.
 """
-from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
-from functools import partial
 from kivy.uix.slider import Slider
 
 
@@ -31,7 +29,7 @@ class MenuBottom(BoxLayout):
             count.
         lbl_infected: Kivy Label to identify the infected Individual count
             in the menu.
-        lbl_value_healthy: Kivy Label that displays the infected Individual
+        lbl_value_infected: Kivy Label that displays the infected Individual
             count.
 
     Args:
@@ -61,18 +59,6 @@ class MenuBottom(BoxLayout):
         self.add_widget(self.lbl_sldr_infection_probability)
         self.sldr_infection_probability.bind(
             value=self.on_value_infection_probability)
-        self.btn_add_healthy = Button(text='    +1\nHealthy',
-                                      on_press=partial(
-                                          simulation.add_healthy, 1))
-        self.btn_add_infected = Button(text='    +1\nInfected',
-                                       on_press=partial(
-                                           simulation.add_infected, 1))
-        self.btn_reset = Button(text='Reset',
-                                on_press=partial(
-                                    simulation.reset_population))
-        self.add_widget(self.btn_reset)
-        self.add_widget(self.btn_add_healthy)
-        self.add_widget(self.btn_add_infected)
 
     def on_value_infection_probability(self, instance, probality):
         """ Method that binds the infection probability Slider with its value

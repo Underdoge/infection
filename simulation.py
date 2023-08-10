@@ -317,7 +317,7 @@ class Simulation(App):
                                     orientation='vertical',
                                     size_hint=(.1, .7))
         self.layout.add_widget(self.menu_right)
-        self.menu = MenuBottom(size_hint=(1, 0.2))
+        self.menu = MenuBottom(self, size_hint=(1, 0.2))
         self.root.add_widget(self.layout)
         self.root.add_widget(self.menu)
         Clock.schedule_interval(self.update, 1.0 / 60.0)
