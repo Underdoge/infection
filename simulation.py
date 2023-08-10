@@ -53,7 +53,7 @@ class Simulation(App):
         self._healthy = 0
         self._infected = 0
         self._infection_radius = INDIVIDUAL_SIZE
-        self._healthy_color = [0, .3, .7, 1]  # check if its in config file
+        self._healthy_color = [0, .3, .7, 1]
         self._infected_color = [.85, .07, .23, 1]
         self._recovered_color = [0, .5, 0, 1]
 
