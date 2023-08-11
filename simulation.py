@@ -1,6 +1,7 @@
 """ This module defines the Simulation class and all of its properties
     and methods. This is the main class that controls the simulation.
 """
+from quads import QuadTree
 from decorators.debugging_decorator import debugging_decorator
 from util.menu_bottom import MenuBottom
 from util.menu_right import MenuRight
@@ -30,15 +31,17 @@ class Simulation(App):
         thread_pool: A ThreadPoolExecutor instance to spawn new threads
             as required for the simulation, with a maximum of 200 workers.
         threads: Integer that keeps the count of the spawned threads.
+        quadtree: A QuadTree structure that contains the positions of all the
+            individuals in the simulation for fast neighbor search.
         population: List of all the Individuals in the simulation.
         healthy: Integer that keeps the count of the healthy individuals
             in the simulation. Initialized to 0.
         infected: Integer that keeps the count of the infected individuals
             in the simulation. Initialized to 0.
-        infection_radius: Distance that determines how close a healthy
-            individual needs to be to an infected one to get infected.
-            Ignored in the InfectedIndividual class. Initialized to
-            INDIVIDUAL_SIZE.
+        individual_size: The size of an individual in the canvas. It also
+            determines how close a healthy individual needs to be to an
+            infected one to get infected. Ignored in the InfectedIndividual
+            class. Initialized to INDIVIDUAL_SIZE.
         healthy_color: The color of a healthy individual in the canvas.
         infected_color: The color of an infected individual in the canvas.
         recovered_color: The color of an infected individual in the canvas.
@@ -49,13 +52,22 @@ class Simulation(App):
         self._thread_pool = ThreadPoolExecutor(
             max_workers=200)
         self._threads = len(enumerate())
+        self._quadtree = QuadTree((0, 0), (Window.size)[0], (Window.size)[1])
         self._population = []
         self._healthy = 0
         self._infected = 0
-        self._infection_radius = INDIVIDUAL_SIZE
+        self._individual_size = INDIVIDUAL_SIZE
         self._healthy_color = [0, .3, .7, 1]
         self._infected_color = [.85, .07, .23, 1]
         self._recovered_color = [0, .5, 0, 1]
+
+    @property
+    def quadtree(self):
+        return self._quadtree
+
+    @quadtree.setter
+    def quadtree(self, quadtree):
+        self._quadtree = quadtree
 
     @property
     def thread_pool(self):
@@ -120,6 +132,14 @@ class Simulation(App):
     @infection_radius.setter
     def infection_radius(self, infection_radius):
         self._infection_radius = infection_radius
+
+    @property
+    def individual_size(self):
+        return self._individual_size
+
+    @individual_size.setter
+    def individual_size(self, individual_size):
+        self._individual_size = individual_size
 
     @property
     def healthy_color(self):
@@ -214,17 +234,17 @@ class Simulation(App):
             for x in range(number):
                 coordinate = (uniform(
                     0, self.layout.width -
-                    self.menu_right.width - INDIVIDUAL_SIZE),
+                    self.menu_right.width - self.individual_size),
                     uniform(self.menu.height, self.layout.height))
                 healthy_individual = HealthyIndividual(self, float(
                     self.menu.lbl_sldr_infection_probability.text))
-                circular_button = CircularButton(size=(INDIVIDUAL_SIZE,
-                                                       INDIVIDUAL_SIZE),
-                                                 pos=coordinate,
-                                                 text="",
-                                                 color=self.healthy_color,
-                                                 simulation=self,
-                                                 individual=healthy_individual)
+                circular_button = CircularButton(
+                    size=(self.individual_size, self.individual_size),
+                    pos=coordinate,
+                    text="",
+                    color=self.healthy_color,
+                    simulation=self,
+                    individual=healthy_individual)
                 logging.info(f"New healthy individual with \
 {circular_button.individual.infection_probability} infection probability.")
                 circular_button.speed = uniform(0.5, 0.9)
@@ -250,11 +270,11 @@ class Simulation(App):
             for x in range(number):
                 coordinate = (uniform(
                     0, self.layout.width -
-                    self.menu_right.width - INDIVIDUAL_SIZE),
+                    self.menu_right.width - self.individual_size),
                     uniform(self.menu.height, self.layout.height))
                 infected_individual = InfectedIndividual(simulation=self)
                 circular_button = CircularButton(
-                    size=(INDIVIDUAL_SIZE, INDIVIDUAL_SIZE),
+                    size=(self.individual_size, self.individual_size),
                     pos=coordinate,
                     text="",
                     color=self.infected_color,
@@ -274,8 +294,8 @@ class Simulation(App):
             the simulation.
             To control the infection state, the "infection" method of each
             Individual is invoked in a thread, providing it the button
-            containing the individual, a List of the currently infected
-            individuals, and the radius of infection.
+            containing the individual, and a quadtree with the positions of
+            all the individuals.
             To control the movement, the "move" method of each Individual is
             invoked in a thread, providing an instance of the main simulation
             so the individual can calculate its position in the canvas and
@@ -285,18 +305,16 @@ class Simulation(App):
             dt (Float): Internal Kivy property used to update the app on each
             cycle.
         """
+        self.quadtree = QuadTree(
+            (0, 0), 2 * Window.size[0], 2 * Window.size[1])
+        for circle in self.population:
+            self.quadtree.insert(circle.pos, data=circle.individual.status)
         executor = self.thread_pool
         for i in range(0, len(self.population)):
             executor.submit(
                 self.population[i].individual.infection(
                     self.population[i],
-                    list(filter(
-                        lambda x: x.individual.status == "infected",
-                        self.population[:i]))+list(
-                            filter(
-                                lambda x: x.individual.status == "infected",
-                                self.population[i+1:])),
-                    self.infection_radius))
+                    self.quadtree))
         for individual in self.population:
             executor.submit(individual.move(self))
         if len(enumerate()) != self.threads:

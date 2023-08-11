@@ -2,6 +2,7 @@
     HeallthyIndividual and InfectedIndividual subclasses and all of their
     properties and methods.
 """
+from quads import BoundingBox
 from abc import ABC, abstractmethod
 import numpy as np
 from random import uniform
@@ -78,13 +79,17 @@ class HealthyIndividual(Individual):
             recovered from an infection. False by default. True when it has
             recovered from an infection. An individual that has recovered
             from an infection can no longer get infected.
-        time_infected: Integer property that tracks for how many cycles
-            the individual has been infected. Once it reaches
-            MAX_TIME_INFECTED the individual recovers.
+        time_infected: Integer property that tracks during how many cycles
+            the individual has been infected.
+        max_time_infected: Integer property that defines how many cycles need
+            to pass until the individual recovers.
+            Set to MAX_TIME_INFECTED.
         cooldown: Integer property that tracks how many cycles have passed
             after the last infection evaluation to avoid evaluating against
-            the same individual multiple times after crossing paths. Once it
-            reaches MAX_COOLDOWN infection evaluations restart.
+            the same individual multiple times after crossing paths.
+        max_cooldown: Integer property that defines how many cycles need
+            to pass until the infection evaluations restart.
+            Set to MAX_COOLDOWN.
         status: String property that tracks the infection status of the
             individual. "healthy" by default.
     """
@@ -95,7 +100,9 @@ class HealthyIndividual(Individual):
         self._infection_probability = infection_probability
         self._recovered = False
         self._time_infected = 0
+        self._max_time_infected = MAX_TIME_INFECTED
         self._cooldown = 0
+        self._max_cooldown = MAX_COOLDOWN
         self._status = "healthy"
 
     @property
@@ -115,12 +122,20 @@ class HealthyIndividual(Individual):
         self._time_infected = time_infected
 
     @property
+    def max_time_infected(self):
+        return self._max_time_infected
+
+    @property
     def cooldown(self):
         return self._cooldown
 
     @cooldown.setter
     def cooldown(self, cooldown):
         self._cooldown = cooldown
+
+    @property
+    def max_cooldown(self):
+        return self._max_cooldown
 
     @property
     def recovered(self):
@@ -146,7 +161,7 @@ class HealthyIndividual(Individual):
     def simulation(self, simulation):
         self._simulation = simulation
 
-    def evaluate_infection(self, circular_button, infected_others, radius):
+    def evaluate_infection(self, circular_button, quad_tree):
         """ Method that iterates the infected_other list and the
             infected_neighbor_count variable is used to store the number of
             infected individuals within the provided radius.
@@ -157,23 +172,40 @@ class HealthyIndividual(Individual):
         Args:
             circular_button (CircularButton): Instance of the button
                 containing the individual.
-            infected_others (List): A list with all the buttons containing
-                infected individuals in the simulation.
-            radius (Integer): Distance that determines how close a button
-                containing a healthy individual needs to be to a button
-                containing infected one to get evaluated for infection.
+            quad_tree (QuadTree): A quadtree structure that contains the
+                positions of all the individuals in the simulation for fast
+                neighbor search.
+
         """
         infected_neighbor_count = 0
-        for infected_other in infected_others:
-            if circular_button.distance(infected_other.pos) <= radius:
-                infected_neighbor_count += 1
-        if infected_neighbor_count > 0:
-            infected = sum(np.random.choice(
-                [0, 1],
-                size=infected_neighbor_count,
-                p=[1 - self.infection_probability,
-                   self.infection_probability]))
-            return infected, infected_neighbor_count
+        infection_radius = circular_button.simulation.individual_size
+        """ Get all Points in the quadtree within the individual's radius,
+            including the individual itself.
+        """
+        others = quad_tree.within_bb(
+            BoundingBox(circular_button.x - infection_radius,
+                        circular_button.y - infection_radius,
+                        circular_button.x + infection_radius,
+                        circular_button.y + infection_radius))
+        if len(others) > 1:
+            infected_others = list(filter(lambda x: x.data == "infected",
+                                          others))
+            """ BoundingBox is a square around the individual's position so
+                we still need to filter out some individuals that may be
+                outside the infection_radius.
+            """
+            for infected_other in infected_others:
+                distance = circular_button.distance((infected_other.x,
+                                                     infected_other.y))
+                if distance > 0 and distance <= infection_radius:
+                    infected_neighbor_count += 1
+            if infected_neighbor_count > 0:
+                infected = sum(np.random.choice(
+                    [0, 1],
+                    size=infected_neighbor_count,
+                    p=[1 - self.infection_probability,
+                       self.infection_probability]))
+                return infected, infected_neighbor_count
         return 0, infected_neighbor_count
 
     def sick(self, circular_button):
@@ -205,21 +237,18 @@ class HealthyIndividual(Individual):
         circular_button.speed = uniform(0.5, 0.9)
         logging.info("Recovered!")
 
-    def infection(self, circular_button, infected_others, radius):
+    def infection(self, circular_button, quad_tree):
         """ Method that controls if the individual will get infected by
             being around one or more infected individuals in the provided
-            infected_others list if they are inside the provided radius,
-            or if the individual is now recovered because MAX_TIME_INFECTED
-            cycles have passed after infection.
+            quad_tree, or if the individual is now recovered because
+            self.max_time_infected cycles have passed after infection.
 
         Args:
             circular_button (CircularButton): The instance of the button
                 containing the individual to change its properties.
-            infected_others (List): A list with all the buttons containing
-                infected individuals in the simulation.
-            radius (Integer): Distance that determines how close a button
-                containing a healthy individual needs to be to a button
-                containing infected one to get infected.
+            quad_tree (QuadTree): A quadtree structure that contains the
+                position of all the individuals in the canvas for fast
+                neighbor search.
         """
         if self.cooldown > 0:
             self.cooldown -= 1
@@ -227,16 +256,16 @@ class HealthyIndividual(Individual):
             pass
         elif self.status == "infected":
             self.time_infected += 1
-            if self.time_infected == MAX_TIME_INFECTED:
+            if self.time_infected == self.max_time_infected:
                 self.recover(circular_button)
         else:
             infected, infected_neighbour_count = self.evaluate_infection(
-                circular_button, infected_others, radius)
+                circular_button, quad_tree)
             if infected_neighbour_count > 0:
                 if infected > 0:
                     self.sick(circular_button)
                 else:
-                    self.cooldown = MAX_COOLDOWN
+                    self.cooldown = self.max_cooldown
                     logging.info(f"Contact with {infected_neighbour_count} \
 infected neighbors but no infection.")
 
@@ -252,10 +281,13 @@ class InfectedIndividual(Individual):
         simulation: To store the instance of the simulation class.
         recovered: Boolean property used to track when the individual has
             recovered from an infection. False by default. True when it has
-            recovered from an infection. And individual that has recovered
+            recovered from an infection. An individual that has recovered
             from an infection can no longer get infected.
-        time_infected: Integer property that tracks for how many cycles
+        time_infected: Integer property that tracks during how many cycles
             the individual has been infected.
+        max_time_infected: Integer property that defines how many cycles need
+            to pass until the individual recovers.
+            Set to MAX_TIME_INFECTED.
         status: String property that tracks the infection status of the
             individual. "infected" by default.
     """
@@ -265,6 +297,7 @@ class InfectedIndividual(Individual):
         self._simulation = simulation
         self._recovered = False
         self._time_infected = 0
+        self._max_time_infected = MAX_TIME_INFECTED
         self._status = "infected"
 
     @property
@@ -282,6 +315,10 @@ class InfectedIndividual(Individual):
     @time_infected.setter
     def time_infected(self, time_infected):
         self._time_infected = time_infected
+
+    @property
+    def max_time_infected(self):
+        return self._max_time_infected
 
     @property
     def recovered(self):
@@ -314,23 +351,19 @@ class InfectedIndividual(Individual):
         circular_button.speed = uniform(0.5, 0.9)
         logging.info("Recovered!")
 
-    def infection(self, circular_button, infected_others, radius):
+    def infection(self, circular_button, quad_tree):
         """ Method that controls if the individual is now recovered because
-            MAX_TIME_INFECTED cycles have passed after infection.
+            self.max_time_infected cycles have passed after infection.
 
         Args:
             circular_button (CircularButton): The instance of the button
                 containing the individual to change its properties.
-            infected_others (List): A list with all the infected individuals in
-                                    the simulation. Ignored in the
-                                    InfectedIndividual class.
-            radius (Integer): Distance that determines how close a healthy
-                              individual needs to be to an infected one to get
-                              infected. Ignored in the InfectedIndividual
-                              class.
+            quad_tree (QuadTree): A quadtree structure that contains the
+                position of all the individuals in the canvas for fast
+                neighbor search. Ignored in the InfectedIndividual class.
         """
         if self.recovered:
             pass
         self.time_infected += 1
-        if self.time_infected == MAX_TIME_INFECTED:
+        if self.time_infected == self.max_time_infected:
             self.recover(circular_button)
