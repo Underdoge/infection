@@ -51,7 +51,7 @@ python3 -m pytest -v
 ```powershell
 python -m pytest -v
 ```
-## Important: Running the tests using 'pytest -v' won't work because it doesn't add 'infection' to the current path, only 'python -m pytest -v' does.
+## Important: Running the unit tests using 'pytest -v' won't work because it doesn't add 'infection' to the current path, only 'python -m pytest -v' does.
 #
 # Usage
 ## Infection Probability
