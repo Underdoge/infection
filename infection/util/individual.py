@@ -163,13 +163,10 @@ class HealthyIndividual(Individual):
         self._simulation = simulation
 
     @debugging_decorator
-    def evaluate_infection(self, circular_button, quad_tree):
-        """ Method that iterates the infected_other list and the
-            infected_neighbor_count variable is used to store the number of
-            infected individuals within the provided radius.
-            If there's one or more infected neighbors, a formula is used to
-            randomly calculate if the individual should get infected based on
-            the infection_probability and the number of infected neighbors.
+    def count_infected_neighbors(self, circular_button, quad_tree):
+        """ Method that searches the quad_tree to find the number of infected
+            individuals within the provided radius and returns the count in
+            the infected_neighbor_count variable.
 
         Args:
             circular_button (CircularButton): Instance of the button
@@ -177,10 +174,10 @@ class HealthyIndividual(Individual):
             quad_tree (QuadTree): A quadtree structure that contains the
                 positions of all the individuals in the simulation for fast
                 neighbor search.
-
         """
         infected_neighbor_count = 0
         infection_radius = circular_button.simulation.individual_size
+
         """ Get all Points in the quadtree within the individual's radius,
             including the individual itself.
         """
@@ -194,22 +191,41 @@ class HealthyIndividual(Individual):
                                           others))
             """ BoundingBox is a square around the individual's position so
                 we still need to filter out some individuals that may be
-                outside the infection_radius.
+                outside the infection_radius and the individual itself.
             """
             for infected_other in infected_others:
                 distance = circular_button.distance((infected_other.x,
                                                      infected_other.y))
                 if distance > 0 and distance <= infection_radius:
                     infected_neighbor_count += 1
-            if infected_neighbor_count > 0:
-                infected = sum(np.random.choice(
-                    [0, 1],
-                    size=infected_neighbor_count,
-                    p=[1 - self.infection_probability,
-                       self.infection_probability]))
-                return infected, infected_neighbor_count
+        return infected_neighbor_count
+
+    @debugging_decorator
+    def evaluate_infection(self, circular_button, quad_tree):
+        """ Method that calls the count_infected_neighbors method and if
+            there's one or more infected neighbors, a formula is used to
+            randomly calculate if the individual should get infected based on
+            the infection_probability and the number of infected neighbors.
+
+        Args:
+            circular_button (CircularButton): Instance of the button
+                containing the individual.
+            quad_tree (QuadTree): A quadtree structure that contains the
+                positions of all the individuals in the simulation for fast
+                neighbor search.
+        """
+        infected_neighbor_count = self.count_infected_neighbors(
+            circular_button, quad_tree)
+        if infected_neighbor_count > 0:
+            infected = sum(np.random.choice(
+                [0, 1],
+                size=infected_neighbor_count,
+                p=[1 - self.infection_probability,
+                    self.infection_probability]))
+            return infected, infected_neighbor_count
         return 0, infected_neighbor_count
 
+    @debugging_decorator
     def sick(self, circular_button):
         """ Method to set the individual's properties when it gets sick.
 
@@ -224,6 +240,7 @@ class HealthyIndividual(Individual):
         circular_button.speed = uniform(0.3, 0.8)
         logging.info("Infected!")
 
+    @debugging_decorator
     def recover(self, circular_button):
         """ Method to set the individual's properties when it recovers.
 
@@ -239,6 +256,7 @@ class HealthyIndividual(Individual):
         circular_button.speed = uniform(0.5, 0.9)
         logging.info("Recovered!")
 
+    @debugging_decorator
     def infection(self, circular_button, quad_tree):
         """ Method that controls if the individual will get infected by
             being around one or more infected individuals in the provided
@@ -338,6 +356,7 @@ class InfectedIndividual(Individual):
     def simulation(self, simulation):
         self._simulation = simulation
 
+    @debugging_decorator
     def recover(self, circular_button):
         """ Method to set the individual's properties when it recovers.
 
@@ -353,6 +372,7 @@ class InfectedIndividual(Individual):
         circular_button.speed = uniform(0.5, 0.9)
         logging.info("Recovered!")
 
+    @debugging_decorator
     def infection(self, circular_button, quad_tree):
         """ Method that controls if the individual is now recovered because
             self.max_time_infected cycles have passed after infection.

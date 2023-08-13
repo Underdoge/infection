@@ -1,4 +1,4 @@
-""" This module defines the debugging_decorator decorator function.
+""" This module defines the debugging_decorator decorator.
 """
 import functools
 import logging
@@ -8,13 +8,15 @@ import sys
 def debugging_decorator(func):
     """ This decorator will take any function and log information about the
         function itself, its arguments, and the value it returns.
-        It will only log when in debugging mode.
+        Important: It will only log when running in debugging mode.
 
     Args:
-        func (funcion): The function to decorate
+        func (function): The function to decorate
 
     Returns:
-        value (function): The decorated function
+        value (function): The function after decoration when running in
+            debugging mode, otherwise the funcion is returned without
+            decoration.
     """
     @functools.wraps(func)
     def wrapper(*args, **kwargs):

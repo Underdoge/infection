@@ -5,6 +5,7 @@ import numpy as np
 from kivy.properties import (
     NumericProperty, ReferenceListProperty
 )
+from infection.decorators.debugging_decorator import debugging_decorator
 from kivy.uix.button import ButtonBehavior
 from kivy.uix.label import Label
 from threading import Lock
@@ -81,6 +82,7 @@ class CircularButton(ButtonBehavior, Label):
     def speed(self, speed):
         self._speed = speed
 
+    @debugging_decorator
     def distance(self, coord):
         """ This is a simple formula to calculate the ecludian distance
             between the button's current coordinate (self.pos) and a
