@@ -57,8 +57,7 @@ python -m pytest -v
 ### Infection Probability
 - The Infection Probability value determines how likely a healthy individual is to get infected upon contact with an infected one.
 - Adjust the Infection Probability slider to the desired value, the default is 0.2.
-- Only new individuals will be created with the selected value, previously created individuals are not affected when changing the slider value.
-- In other words, each individual keeps its own infection probability throughout the simulation.
+- Only new individuals will be created with the selected value, previously created individuals are not affected when changing the slider value. In other words, each individual keeps its own infection probability throughout the simulation.
 ### Adding or Removing Individuals 
 - Press the "+1 Healthy" button to add a new healthy individual to the simulation.
 - Press the "+1 Infected" button to add a new infected individual to the simulation.
@@ -67,9 +66,10 @@ python -m pytest -v
 - Press the "Healthy Color" button to change the color of new healthy individuals.
 - Press the "Infected Color" button to change the color of new infected individuals.
 - Press the "Recovered Color" button to change the color of new recovered individuals.
+- Only new individuals will be created with the new color, previously created individuals are not affected when changing the color. In other words, each individual keeps its infection status color throughout the simulation until it updates its infection status.
 #
 # Requirements
-- Python 3.6 or greater
+- Python 3.7 or greater
 - Git (to clone the repo)
 #
 # Unsupported
