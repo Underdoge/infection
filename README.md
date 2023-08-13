@@ -32,15 +32,26 @@ pip install -r requirements_macos_linux.txt
 pip install -r requirements_win.txt
 ```
 #
-# Running the program
+# Running the program on macOS / Linux
 ```sh
+python3 main.py
+```
+#
+# Running the program on Windows (PowerShell)
+```powershell
 python main.py
 ```
 #
-# Running the unit tests
+# Running the unit tests on macOS / Linux
 ```sh
-pytest -v
+python3 -m pytest -v
 ```
+#
+# Running the unit tests on Windows (Powershell)
+```powershell
+python -m pytest -v
+```
+## Important: Running the tests using 'pytest -v' won't work because it doesn't add 'infection' to the current path, only 'python -m pytest -v' does.
 #
 # Usage
 ## Infection Probability

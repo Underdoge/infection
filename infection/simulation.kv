@@ -1,0 +1,15 @@
+#:kivy 2.0
+# This Kivy file controls the graphical elements of the Kivy application.
+# In particular, it is required to give the CircularButton its rounded shape by indicating the radius property.
+<CircularButton>:
+    canvas:
+        Color: 
+            rgb: (self.color)
+        RoundedRectangle:
+            size: (self.size)
+            pos: (self.pos)
+            radius: [self.size[0], ]
+<MenuBottom>:
+    size: (self.size)
+<MenuRight>:
+    size: (self.size)

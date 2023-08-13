@@ -2,6 +2,7 @@
     HeallthyIndividual and InfectedIndividual subclasses and all of their
     properties and methods.
 """
+from infection.decorators.debugging_decorator import debugging_decorator
 from quads import BoundingBox
 from abc import ABC, abstractmethod
 import numpy as np
@@ -161,6 +162,7 @@ class HealthyIndividual(Individual):
     def simulation(self, simulation):
         self._simulation = simulation
 
+    @debugging_decorator
     def evaluate_infection(self, circular_button, quad_tree):
         """ Method that iterates the infected_other list and the
             infected_neighbor_count variable is used to store the number of
