@@ -20,7 +20,7 @@ import logging
 
 lock = Lock()
 logging.basicConfig(level=10, format="%(threadName)s:%(message)s")
-INDIVIDUAL_SIZE = (Window.size)[1] * .035
+INDIVIDUAL_SIZE = Window.size[1] * .035
 
 
 class Simulation(App):
@@ -35,16 +35,19 @@ class Simulation(App):
             individuals in the simulation for fast neighbor search.
         population: List of all the Individuals in the simulation.
         healthy: Integer that keeps the count of the healthy individuals
-            in the simulation. Initialized to 0.
+            in the simulation.
         infected: Integer that keeps the count of the infected individuals
-            in the simulation. Initialized to 0.
+            in the simulation.
         individual_size: The size of an individual in the canvas. It also
             determines how close a healthy individual needs to be to an
             infected one to get infected. Ignored in the InfectedIndividual
             class. Initialized to INDIVIDUAL_SIZE.
         healthy_color: The color of a healthy individual in the canvas.
+            Initialized to the rgba value of blue.
         infected_color: The color of an infected individual in the canvas.
+            Initialized to the rgba value of red.
         recovered_color: The color of an infected individual in the canvas.
+            Initialized to the rgba value of green.
     """
 
     def __init__(self, **kwargs):
@@ -52,7 +55,7 @@ class Simulation(App):
         self._thread_pool = ThreadPoolExecutor(
             max_workers=200)
         self._threads = len(enumerate())
-        self._quadtree = QuadTree((0, 0), (Window.size)[0], (Window.size)[1])
+        self._quadtree = QuadTree((0, 0), Window.size[0], Window.size[1])
         self._population = []
         self._healthy = 0
         self._infected = 0
