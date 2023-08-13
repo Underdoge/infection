@@ -43,7 +43,7 @@ python main.py
 ```
 #
 # Running the unit tests
-Important: Running the unit tests using 'pytest -v' won't work because it doesn't add 'infection' to the current path, only 'python -m pytest -v' does.
+Important: Running the unit tests using 'pytest -v' won't work because it doesn't add the 'infection' module to the current path, only 'python -m pytest -v' does.
 ### Running the unit tests on macOS / Linux
 ```sh
 python3 -m pytest -v
