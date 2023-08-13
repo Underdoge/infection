@@ -52,7 +52,8 @@ class Individual(ABC):
     @abstractmethod
     def infection(self):
         """ Abstract method that will control the infection status of the
-            individual.
+            individual and decide if it will get infected or if it will
+            recover.
         """
         pass
 
@@ -270,10 +271,10 @@ class HealthyIndividual(Individual):
                 position of all the individuals in the canvas for fast
                 neighbor search.
         """
-        if self.cooldown > 0:
-            self.cooldown -= 1
-        elif self.recovered:
+        if self.recovered:
             pass
+        elif self.cooldown > 0:
+            self.cooldown -= 1
         elif self.status == "infected":
             self.time_infected += 1
             if self.time_infected == self.max_time_infected:
