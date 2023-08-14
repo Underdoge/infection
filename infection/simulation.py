@@ -1,6 +1,7 @@
 """ This module defines the Simulation class and all of its properties
     and methods. This is the main class that controls the simulation.
 """
+import os
 from quads import QuadTree
 from infection.decorators.debugging_decorator import debugging_decorator
 from infection.util.menu_bottom import MenuBottom
@@ -20,7 +21,6 @@ import logging
 
 lock = Lock()
 logging.basicConfig(level=10, format="%(threadName)s:%(message)s")
-INDIVIDUAL_SIZE = Window.size[1] * .035
 
 
 class Simulation(App):
@@ -41,7 +41,7 @@ class Simulation(App):
         individual_size: The size of an individual in the canvas. It also
             determines how close a healthy individual needs to be to an
             infected one to get infected. Ignored in the InfectedIndividual
-            class. Initialized to INDIVIDUAL_SIZE.
+            class. Initialized to Window.size[1] * .035.
         healthy_color: The color of a healthy individual in the canvas.
             Initialized to the rgba value of blue.
         infected_color: The color of an infected individual in the canvas.
@@ -51,7 +51,8 @@ class Simulation(App):
     """
 
     def __init__(self, **kwargs):
-        super(Simulation, self).__init__(**kwargs)
+        if 'KIVY_DOC' not in os.environ:
+            super(Simulation, self).__init__(**kwargs)
         self._thread_pool = ThreadPoolExecutor(
             max_workers=200)
         self._threads = len(enumerate())
@@ -59,7 +60,7 @@ class Simulation(App):
         self._population = []
         self._healthy = 0
         self._infected = 0
-        self._individual_size = INDIVIDUAL_SIZE
+        self._individual_size = Window.size[1] * .035
         self._healthy_color = [0, .3, .7, 1]
         self._infected_color = [.85, .07, .23, 1]
         self._recovered_color = [0, .5, 0, 1]
