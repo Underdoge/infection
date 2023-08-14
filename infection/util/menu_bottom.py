@@ -61,8 +61,8 @@ class MenuBottom(BoxLayout):
             value=self.on_value_infection_probability)
 
     def on_value_infection_probability(self, instance, probality):
-        """ Method that binds the infection probability Slider with its value
-            Label.
+        """ Method that updates the text of the infection probability value
+            Label to the value of the Slider when it changes.
 
         Args:
             instance (kivy.uix.slider.Slider): The infection
