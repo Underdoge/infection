@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>infection.util.menu_right &#8212; infection 1.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b76e3c8a" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/classic.css?v=89b800e6" />
+    
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=af2ce170"></script>
+    <script src="../../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">infection 1.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">infection.util.menu_right</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for infection.util.menu_right</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot; The following module is the definition of the MenuRight class, its</span>
+<span class="sd">    properties, and its methods.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">kivy.uix.button</span> <span class="kn">import</span> <span class="n">Button</span>
+<span class="kn">from</span> <span class="nn">kivy.uix.boxlayout</span> <span class="kn">import</span> <span class="n">BoxLayout</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">kivy.uix.popup</span> <span class="kn">import</span> <span class="n">Popup</span>
+<span class="kn">from</span> <span class="nn">kivy.uix.colorpicker</span> <span class="kn">import</span> <span class="n">ColorPicker</span>
+
+
+<div class="viewcode-block" id="MenuRight"><a class="viewcode-back" href="../../../infection.util.html#infection.util.menu_right.MenuRight">[docs]</a><span class="k">class</span> <span class="nc">MenuRight</span><span class="p">(</span><span class="n">BoxLayout</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; This is the definition of the MenuRight class. It inherits from the</span>
+<span class="sd">        BoxLayout Kivy class.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        simulation (Simulation): Instance of the Simulation class.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        simulation: Here we store the instance of the Simulation class.</span>
+<span class="sd">        btn_add_healthy: Kivy Button that allows the user to add a healthy</span>
+<span class="sd">            individual to the simulation.</span>
+<span class="sd">        btn_add_infected: Kivy Button that allows the user to add an</span>
+<span class="sd">            infected individual to the simulation.</span>
+<span class="sd">        btn_reset: Kivy Button that allows the user to reset the</span>
+<span class="sd">            simulation, removing all healthy and infected individuals.</span>
+<span class="sd">        btn_healthy_color: Kivy Button that shows the</span>
+<span class="sd">            popup_healthy_color_picker.</span>
+<span class="sd">        btn_cancel_healthy_color: Kivy Button that closes the</span>
+<span class="sd">            popup_healthy_color_picker.</span>
+<span class="sd">        btn_save_healthy_color: Kivy Button to save the Healthy Individual</span>
+<span class="sd">            color.</span>
+<span class="sd">        healthy_clr_pkr: Kivy ColorPicker to allow the user to change the</span>
+<span class="sd">            color of the Healthy Individual.</span>
+<span class="sd">        popup_healthy_color_picker: Kivy Popup widget that contains the</span>
+<span class="sd">            healthy_clr_pkr, btn_cancel_healthy_color and</span>
+<span class="sd">            btn_save_healthy_color widgets.</span>
+<span class="sd">        btn_infected_color: Kivy Button that shows the</span>
+<span class="sd">            popup_infected_color_picker.</span>
+<span class="sd">        btn_cancel_infected_color: Kivy Button that closes the</span>
+<span class="sd">            popup_infected_color_picker.</span>
+<span class="sd">        btn_save_infected_color: Kivy Button to save the Infected Individual</span>
+<span class="sd">            color.</span>
+<span class="sd">        infected_clr_pkr: Kivy ColorPicker to allow the user to change the</span>
+<span class="sd">            color of the Infected Individual.</span>
+<span class="sd">        popup_infected_color_picker: Kivy Popup widget that contains the</span>
+<span class="sd">            infected_clr_pkr, btn_cancel_infected_color and</span>
+<span class="sd">            btn_save_infected_color widgets.</span>
+<span class="sd">        btn_recovered_color: Kivy Button that shows the</span>
+<span class="sd">            popup_recovered_color_picker.</span>
+<span class="sd">        btn_cancel_recovered_color: Kivy Button that closes the</span>
+<span class="sd">            popup_recovered_color_picker.</span>
+<span class="sd">        btn_save_recovered_color: Kivy Button to save the Recovered Individual</span>
+<span class="sd">            color.</span>
+<span class="sd">        recovered_clr_pkr: Kivy ColorPicker to allow the user to change</span>
+<span class="sd">            the color of the Recovered Individual.</span>
+<span class="sd">        popup_recovered_color_picker: Kivy Popup widget that contains the</span>
+<span class="sd">            recovered_clr_pkr, btn_cancel_recovered_color and</span>
+<span class="sd">            btn_save_recovered_color widgets.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulation</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MenuRight</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span> <span class="o">=</span> <span class="n">simulation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btn_add_healthy</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;    +1</span><span class="se">\n</span><span class="s1">Healthy&#39;</span><span class="p">,</span>
+                                      <span class="n">on_press</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span>
+                                          <span class="n">simulation</span><span class="o">.</span><span class="n">add_healthy</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btn_add_infected</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;    +1</span><span class="se">\n</span><span class="s1">Infected&#39;</span><span class="p">,</span>
+                                       <span class="n">on_press</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span>
+                                           <span class="n">simulation</span><span class="o">.</span><span class="n">add_infected</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btn_reset</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Reset&#39;</span><span class="p">,</span>
+                                <span class="n">on_press</span><span class="o">=</span><span class="n">simulation</span><span class="o">.</span><span class="n">reset_population</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btn_healthy_color</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Healthy</span><span class="se">\n</span><span class="s1">  Color&#39;</span><span class="p">,</span>
+                                        <span class="n">on_press</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span>
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">show_healthy_color_picker</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btn_infected_color</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span>
+            <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Infected</span><span class="se">\n</span><span class="s1">   Color&#39;</span><span class="p">,</span>
+            <span class="n">on_press</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">show_infected_color_picker</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btn_recovered_color</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span>
+            <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Recovered</span><span class="se">\n</span><span class="s1">     Color&#39;</span><span class="p">,</span>
+            <span class="n">on_press</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">show_recovered_color_picker</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btn_cancel_healthy_color</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Cancel&#39;</span><span class="p">,</span>
+                                               <span class="n">on_press</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span>
+                                                   <span class="bp">self</span><span class="o">.</span><span class="n">cancel_color</span><span class="p">,</span>
+                                                   <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;healthy&quot;</span><span class="p">),</span>
+                                               <span class="n">size_hint</span><span class="o">=</span><span class="p">(</span><span class="mf">.2</span><span class="p">,</span> <span class="mf">.1</span><span class="p">),</span>
+                                               <span class="n">pos_hint</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="mf">.6</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">healthy_clr_pkr</span> <span class="o">=</span> <span class="n">ColorPicker</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btn_save_healthy_color</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Save&#39;</span><span class="p">,</span>
+                                             <span class="n">on_press</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span>
+                                                 <span class="bp">self</span><span class="o">.</span><span class="n">save_color</span><span class="p">,</span>
+                                                 <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;healthy&quot;</span><span class="p">),</span>
+                                             <span class="n">size_hint</span><span class="o">=</span><span class="p">(</span><span class="mf">.2</span><span class="p">,</span> <span class="mf">.1</span><span class="p">),</span>
+                                             <span class="n">pos_hint</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="mf">.8</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">popup_healthy_color_picker</span> <span class="o">=</span> <span class="n">Popup</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Healthy Individual Color&#39;</span><span class="p">,</span>
+            <span class="n">content</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">healthy_clr_pkr</span><span class="p">,</span>
+            <span class="n">size_hint</span><span class="o">=</span><span class="p">(</span><span class="mf">.5</span><span class="p">,</span> <span class="mf">.7</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">healthy_clr_pkr</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">btn_save_healthy_color</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">healthy_clr_pkr</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">btn_cancel_healthy_color</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">infected_clr_pkr</span> <span class="o">=</span> <span class="n">ColorPicker</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btn_cancel_infected_color</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Cancel&#39;</span><span class="p">,</span>
+                                                <span class="n">on_press</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span>
+                                                    <span class="bp">self</span><span class="o">.</span><span class="n">cancel_color</span><span class="p">,</span>
+                                                    <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;infected&quot;</span><span class="p">),</span>
+                                                <span class="n">size_hint</span><span class="o">=</span><span class="p">(</span><span class="mf">.2</span><span class="p">,</span> <span class="mf">.1</span><span class="p">),</span>
+                                                <span class="n">pos_hint</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="mf">.6</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btn_save_infected_color</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Save&#39;</span><span class="p">,</span>
+                                              <span class="n">on_press</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span>
+                                                  <span class="bp">self</span><span class="o">.</span><span class="n">save_color</span><span class="p">,</span>
+                                                  <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;infected&quot;</span><span class="p">),</span>
+                                              <span class="n">size_hint</span><span class="o">=</span><span class="p">(</span><span class="mf">.2</span><span class="p">,</span> <span class="mf">.1</span><span class="p">),</span>
+                                              <span class="n">pos_hint</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="mf">.8</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">popup_infected_color_picker</span> <span class="o">=</span> <span class="n">Popup</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Infected Individual Color&#39;</span><span class="p">,</span>
+            <span class="n">content</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">infected_clr_pkr</span><span class="p">,</span>
+            <span class="n">size_hint</span><span class="o">=</span><span class="p">(</span><span class="mf">.5</span><span class="p">,</span> <span class="mf">.7</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">infected_clr_pkr</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">btn_cancel_infected_color</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">infected_clr_pkr</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">btn_save_infected_color</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recovered_clr_pkr</span> <span class="o">=</span> <span class="n">ColorPicker</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btn_cancel_recovered_color</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Cancel&#39;</span><span class="p">,</span>
+                                                 <span class="n">on_press</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span>
+                                                     <span class="bp">self</span><span class="o">.</span><span class="n">cancel_color</span><span class="p">,</span>
+                                                     <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;recovered&quot;</span><span class="p">),</span>
+                                                 <span class="n">size_hint</span><span class="o">=</span><span class="p">(</span><span class="mf">.2</span><span class="p">,</span> <span class="mf">.1</span><span class="p">),</span>
+                                                 <span class="n">pos_hint</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="mf">.6</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btn_save_recovered_color</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Save&#39;</span><span class="p">,</span>
+                                               <span class="n">on_press</span><span class="o">=</span><span class="n">partial</span><span class="p">(</span>
+                                                   <span class="bp">self</span><span class="o">.</span><span class="n">save_color</span><span class="p">,</span>
+                                                   <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;recovered&quot;</span><span class="p">),</span>
+                                               <span class="n">size_hint</span><span class="o">=</span><span class="p">(</span><span class="mf">.2</span><span class="p">,</span> <span class="mf">.1</span><span class="p">),</span>
+                                               <span class="n">pos_hint</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="mf">.8</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">popup_recovered_color_picker</span> <span class="o">=</span> <span class="n">Popup</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Recovered Individual Color&#39;</span><span class="p">,</span>
+            <span class="n">content</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">recovered_clr_pkr</span><span class="p">,</span>
+            <span class="n">size_hint</span><span class="o">=</span><span class="p">(</span><span class="mf">.5</span><span class="p">,</span> <span class="mf">.7</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recovered_clr_pkr</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">btn_cancel_recovered_color</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recovered_clr_pkr</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">btn_save_recovered_color</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">btn_add_healthy</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">btn_add_infected</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">btn_healthy_color</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">btn_infected_color</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">btn_recovered_color</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">btn_reset</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MenuRight.show_healthy_color_picker"><a class="viewcode-back" href="../../../infection.util.html#infection.util.menu_right.MenuRight.show_healthy_color_picker">[docs]</a>    <span class="k">def</span> <span class="nf">show_healthy_color_picker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Method that opens the popup_healthy_color_picker popup.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            instance (kivy.uix.button.Button): The clicked Button&#39;s</span>
+<span class="sd">                instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">healthy_clr_pkr</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">healthy_color</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">popup_healthy_color_picker</span><span class="o">.</span><span class="n">open</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MenuRight.show_infected_color_picker"><a class="viewcode-back" href="../../../infection.util.html#infection.util.menu_right.MenuRight.show_infected_color_picker">[docs]</a>    <span class="k">def</span> <span class="nf">show_infected_color_picker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Method that opens the popup_infected_color_picker popup.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            instance (kivy.uix.button.Button): The clicked Button&#39;s</span>
+<span class="sd">                instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">infected_clr_pkr</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">infected_color</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">popup_infected_color_picker</span><span class="o">.</span><span class="n">open</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MenuRight.show_recovered_color_picker"><a class="viewcode-back" href="../../../infection.util.html#infection.util.menu_right.MenuRight.show_recovered_color_picker">[docs]</a>    <span class="k">def</span> <span class="nf">show_recovered_color_picker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Method that opens the popup_recovered_color_picker popup.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            instance (kivy.uix.button.Button): The clicked Button&#39;s</span>
+<span class="sd">                instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recovered_clr_pkr</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">recovered_color</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">popup_recovered_color_picker</span><span class="o">.</span><span class="n">open</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MenuRight.save_color"><a class="viewcode-back" href="../../../infection.util.html#infection.util.menu_right.MenuRight.save_color">[docs]</a>    <span class="k">def</span> <span class="nf">save_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Method that saves the value of the color picker to its</span>
+<span class="sd">            corresponding value in the simulation.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            instance (kivy.uix.button.Button): The clicked Button&#39;s</span>
+<span class="sd">                instance.</span>
+<span class="sd">            type (String): A String that indicates the individual type.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">match</span> <span class="nb">type</span><span class="p">:</span>
+            <span class="k">case</span> <span class="s1">&#39;healthy&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">healthy_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">healthy_clr_pkr</span><span class="o">.</span><span class="n">color</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">popup_healthy_color_picker</span><span class="o">.</span><span class="n">dismiss</span><span class="p">()</span>
+            <span class="k">case</span> <span class="s1">&#39;infected&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">infected_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">infected_clr_pkr</span><span class="o">.</span><span class="n">color</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">popup_infected_color_picker</span><span class="o">.</span><span class="n">dismiss</span><span class="p">()</span>
+            <span class="k">case</span> <span class="s1">&#39;recovered&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">recovered_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recovered_clr_pkr</span><span class="o">.</span><span class="n">color</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">popup_recovered_color_picker</span><span class="o">.</span><span class="n">dismiss</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MenuRight.cancel_color"><a class="viewcode-back" href="../../../infection.util.html#infection.util.menu_right.MenuRight.cancel_color">[docs]</a>    <span class="k">def</span> <span class="nf">cancel_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Method that closes the corresponding color picker popup.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            instance (kivy.uix.button.Button): The clicked Button&#39;s</span>
+<span class="sd">                instance.</span>
+<span class="sd">            type (String): A String that indicates the individual type.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">match</span> <span class="nb">type</span><span class="p">:</span>
+            <span class="k">case</span> <span class="s1">&#39;healthy&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">popup_healthy_color_picker</span><span class="o">.</span><span class="n">dismiss</span><span class="p">()</span>
+            <span class="k">case</span> <span class="s1">&#39;infected&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">popup_infected_color_picker</span><span class="o">.</span><span class="n">dismiss</span><span class="p">()</span>
+            <span class="k">case</span> <span class="s1">&#39;recovered&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">popup_recovered_color_picker</span><span class="o">.</span><span class="n">dismiss</span><span class="p">()</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">infection 1.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">infection.util.menu_right</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2023, Eduardo Chapa (Underdoge).
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    </div>
+  </body>
+</html>
