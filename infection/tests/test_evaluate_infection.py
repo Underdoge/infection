@@ -27,7 +27,7 @@ def test_evaluate_infection_sick(simulation_instance: Simulation) -> None:
         simulation_instance (Simulation): An instance of the simulation class.
     """
     simulation = simulation_instance
-    simulation.menu.lbl_sldr_infection_probability.text = "1.0"
+    simulation.infection_probability = 1.0
     simulation.add_healthy(1)
     simulation.population[0].pos = (0, 0)
     simulation.add_infected(1)
@@ -52,7 +52,7 @@ def test_evaluate_infection_healthy(simulation_instance: Simulation) -> None:
         simulation_instance (Simulation): An instance of the simulation class.
     """
     simulation = simulation_instance
-    simulation.menu.lbl_sldr_infection_probability.text = "1.0"
+    simulation.infection_probability = 1.0
     simulation.add_healthy(1)
     simulation.population[0].pos = (0, 0)
     simulation.add_healthy(1)

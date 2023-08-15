@@ -112,11 +112,11 @@ class CircularButton(ButtonBehavior, Label):
 
         Args:
             sim (simulation): Instance of the main simulation app class
-            to access the menu's height and the root widget's height and width
-            to check if the button is at the edge of the canvas.
+            to access the menu_bottom's height and the root widget's height
+            and width to check if the button is at the edge of the canvas.
         """
         self.pos = (Vector(*self.direction) * self.speed) + self.pos
-        if (self.y < sim.menu.height) or (self.top > sim.root.height):
+        if (self.y < sim.menu_bottom.height) or (self.top > sim.root.height):
             self.direction_y *= -1
         if (self.x < 0) or (
                 self.right > sim.root.width - sim.menu_right.width):

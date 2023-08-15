@@ -110,9 +110,9 @@
 <span class="sd">        https://kivy.org/doc/stable/api-kivy.properties.html#kivy.properties.ReferenceListProperty</span>
 
 <span class="sd">        direction_x: Kivy NumericProperty that stores the direction in the</span>
-<span class="sd">            x axis. Initialized to 0.</span>
+<span class="sd">            &#39;x&#39; axis. Initialized to 0.</span>
 <span class="sd">        direction_y: Kivy NumericProperty that stores the direction in the</span>
-<span class="sd">            y axis. Initialized to 0.</span>
+<span class="sd">            &#39;y&#39; axis. Initialized to 0.</span>
 <span class="sd">        direction: Kivy ReferenceListProperty linked to the direction_x</span>
 <span class="sd">            and direction_y Kivy properties, to update its value automatically</span>
 <span class="sd">            whenever either of them changes, and vice versa.</span>
@@ -121,7 +121,6 @@
 <span class="sd">        simulation: To store the instance of the Simulation class.</span>
 <span class="sd">        speed: Float property with a value from 0 to 1 that determines</span>
 <span class="sd">            the speed of the button in the canvas.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">direction_x</span> <span class="o">=</span> <span class="n">NumericProperty</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">direction_y</span> <span class="o">=</span> <span class="n">NumericProperty</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
@@ -181,11 +180,11 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            sim (simulation): Instance of the main simulation app class</span>
-<span class="sd">            to access the menu&#39;s height and the root widget&#39;s height and width</span>
-<span class="sd">            to check if the button is at the edge of the canvas.</span>
+<span class="sd">            to access the menu_bottom&#39;s height and the root widget&#39;s height</span>
+<span class="sd">            and width to check if the button is at the edge of the canvas.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pos</span> <span class="o">=</span> <span class="p">(</span><span class="n">Vector</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">direction</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">speed</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos</span>
-        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">&lt;</span> <span class="n">sim</span><span class="o">.</span><span class="n">menu</span><span class="o">.</span><span class="n">height</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">top</span> <span class="o">&gt;</span> <span class="n">sim</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">height</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">&lt;</span> <span class="n">sim</span><span class="o">.</span><span class="n">menu_bottom</span><span class="o">.</span><span class="n">height</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">top</span> <span class="o">&gt;</span> <span class="n">sim</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">height</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">direction_y</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">right</span> <span class="o">&gt;</span> <span class="n">sim</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="n">sim</span><span class="o">.</span><span class="n">menu_right</span><span class="o">.</span><span class="n">width</span><span class="p">):</span>

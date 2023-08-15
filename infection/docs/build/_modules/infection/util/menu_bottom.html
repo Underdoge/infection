@@ -69,6 +69,10 @@
 <span></span><span class="sd">&quot;&quot;&quot; The following module is the definition of the MenuBottom class, its</span>
 <span class="sd">    properties, and its methods.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">infection.simulation</span> <span class="kn">import</span> <span class="n">Simulation</span>
 <span class="kn">from</span> <span class="nn">kivy.uix.boxlayout</span> <span class="kn">import</span> <span class="n">BoxLayout</span>
 <span class="kn">from</span> <span class="nn">kivy.uix.label</span> <span class="kn">import</span> <span class="n">Label</span>
 <span class="kn">from</span> <span class="nn">kivy.uix.slider</span> <span class="kn">import</span> <span class="n">Slider</span>
@@ -79,6 +83,7 @@
 <span class="sd">        BoxLayout Kivy class.</span>
 
 <span class="sd">    Attributes:</span>
+<span class="sd">        simulation: Here we store the instance of the Simulation class.</span>
 <span class="sd">        lbl_infection_probability: Kivy Label to identify the infection</span>
 <span class="sd">            probability in the menu.</span>
 <span class="sd">        lbl_sldr_infection_probability: Kivy Label that displays the value</span>
@@ -99,11 +104,11 @@
 <span class="sd">            in the menu.</span>
 <span class="sd">        lbl_value_infected: Kivy Label that displays the infected Individual</span>
 <span class="sd">            count.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulation</span><span class="p">:</span> <span class="n">Simulation</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">MenuBottom</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span> <span class="o">=</span> <span class="n">simulation</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lbl_infection_probability</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Infection</span><span class="se">\n</span><span class="s1">Probability:&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lbl_sldr_infection_probability</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;0.2&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sldr_infection_probability</span> <span class="o">=</span> <span class="n">Slider</span><span class="p">(</span><span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
@@ -135,8 +140,8 @@
 <span class="sd">                Slider&#39;s instance.</span>
 <span class="sd">            probality (float): The value of the new infection probability set</span>
 <span class="sd">                in the Slider. Goes from 0.0 to 1.0</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">infection_probability</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">probality</span> <span class="o">/</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lbl_sldr_infection_probability</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span>
             <span class="n">probality</span> <span class="o">/</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span></div></div>
 </pre></div>

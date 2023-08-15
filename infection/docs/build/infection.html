@@ -55,6 +55,7 @@
 <li><a class="reference internal" href="#infection.simulation.Simulation.individual_size"><code class="docutils literal notranslate"><span class="pre">Simulation.individual_size</span></code></a></li>
 <li><a class="reference internal" href="#infection.simulation.Simulation.infected"><code class="docutils literal notranslate"><span class="pre">Simulation.infected</span></code></a></li>
 <li><a class="reference internal" href="#infection.simulation.Simulation.infected_color"><code class="docutils literal notranslate"><span class="pre">Simulation.infected_color</span></code></a></li>
+<li><a class="reference internal" href="#infection.simulation.Simulation.infection_probability"><code class="docutils literal notranslate"><span class="pre">Simulation.infection_probability</span></code></a></li>
 <li><a class="reference internal" href="#infection.simulation.Simulation.infection_radius"><code class="docutils literal notranslate"><span class="pre">Simulation.infection_radius</span></code></a></li>
 <li><a class="reference internal" href="#infection.simulation.Simulation.population"><code class="docutils literal notranslate"><span class="pre">Simulation.population</span></code></a></li>
 <li><a class="reference internal" href="#infection.simulation.Simulation.quadtree"><code class="docutils literal notranslate"><span class="pre">Simulation.quadtree</span></code></a></li>
@@ -222,6 +223,8 @@ healthy: Integer that keeps the count of the healthy individuals</p>
 <dl class="simple">
 <dt>infected: Integer that keeps the count of the infected individuals</dt><dd><p>in the simulation.</p>
 </dd>
+<dt>infection_probability: Float that stores the current infection</dt><dd><p>probability value. Initialized to 0.2.</p>
+</dd>
 <dt>individual_size: The size of an individual in the canvas. It also</dt><dd><p>determines how close a healthy individual needs to be to an
 infected one to get infected. Ignored in the InfectedIndividual
 class. Initialized to Window.size[1] * .035.</p>
@@ -305,6 +308,11 @@ simulation.</p>
 <dd></dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="infection.simulation.Simulation.infection_probability">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">infection_probability</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#infection.simulation.Simulation.infection_probability" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="infection.simulation.Simulation.infection_radius">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">infection_radius</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#infection.simulation.Simulation.infection_radius" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
@@ -343,7 +351,7 @@ simulation.</p>
 <span class="sig-name descname"><span class="pre">safe_sum_healthy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">healthy_number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/infection/simulation.html#Simulation.safe_sum_healthy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#infection.simulation.Simulation.safe_sum_healthy" title="Permalink to this definition"></a></dt>
 <dd><dl class="simple">
 <dt>Method that safely increases or decreases the healthy individual</dt><dd><p>count, using “with lock” to avoid race condition. It also updates
-the value of the healthy individual count Label in the menu.</p>
+the value of the healthy individual count Label in the menu_bottom.</p>
 </dd>
 <dt>Args:</dt><dd><p>healthy_number (int): The number of healthy individuals to
 increase or decrease.</p>
@@ -358,7 +366,7 @@ increase or decrease.</p>
 <span class="sig-name descname"><span class="pre">safe_sum_infected</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infected_number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/infection/simulation.html#Simulation.safe_sum_infected"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#infection.simulation.Simulation.safe_sum_infected" title="Permalink to this definition"></a></dt>
 <dd><dl class="simple">
 <dt>Method that safely increases or decreases the infected individual</dt><dd><p>count, using “with lock” to avoid race condition. It also updates
-the value of the infected individual count Label in the menu.</p>
+the value of the infected individual count Label in the menu_bottom</p>
 </dd>
 <dt>Args:</dt><dd><p>infected_number (int): The number of infected individuals to
 increase or decrease.</p>

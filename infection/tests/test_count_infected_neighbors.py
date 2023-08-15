@@ -51,7 +51,7 @@ def test_count_infected_neighbors_zero(
         simulation_instance (Simulation): An instance of the simulation class.
     """
     simulation = simulation_instance
-    simulation.menu.lbl_sldr_infection_probability.text = "1.0"
+    simulation.menu_bottom.lbl_sldr_infection_probability.text = "1.0"
     simulation.add_healthy(1)
     simulation.population[0].pos = (0, 0)
     simulation.add_healthy(1)

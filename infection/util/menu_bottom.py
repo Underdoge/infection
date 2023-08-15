@@ -1,6 +1,10 @@
 """ The following module is the definition of the MenuBottom class, its
     properties, and its methods.
 """
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from infection.simulation import Simulation
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.slider import Slider
@@ -11,6 +15,7 @@ class MenuBottom(BoxLayout):
         BoxLayout Kivy class.
 
     Attributes:
+        simulation: Here we store the instance of the Simulation class.
         lbl_infection_probability: Kivy Label to identify the infection
             probability in the menu.
         lbl_sldr_infection_probability: Kivy Label that displays the value
@@ -33,8 +38,9 @@ class MenuBottom(BoxLayout):
             count.
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, simulation: Simulation, **kwargs):
         super(MenuBottom, self).__init__(**kwargs)
+        self.simulation = simulation
         self.lbl_infection_probability = Label(text='Infection\nProbability:')
         self.lbl_sldr_infection_probability = Label(text='0.2')
         self.sldr_infection_probability = Slider(min=0, max=10, value=2)
@@ -67,5 +73,6 @@ class MenuBottom(BoxLayout):
             probality (float): The value of the new infection probability set
                 in the Slider. Goes from 0.0 to 1.0
         """
+        self.simulation.infection_probability = round(probality / 10, 1)
         self.lbl_sldr_infection_probability.text = str(round(
             probality / 10, 1))

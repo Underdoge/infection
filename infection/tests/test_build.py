@@ -34,4 +34,4 @@ def test_build(simulation_instance: Simulation) -> None:
     assert isinstance(simulation_instance.root, BoxLayout)
     assert isinstance(simulation_instance.layout, AnchorLayout)
     assert isinstance(simulation_instance.menu_right, MenuRight)
-    assert isinstance(simulation_instance.menu, MenuBottom)
+    assert isinstance(simulation_instance.menu_bottom, MenuBottom)

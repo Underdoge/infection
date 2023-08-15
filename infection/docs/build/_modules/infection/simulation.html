@@ -106,6 +106,8 @@
 <span class="sd">            in the simulation.</span>
 <span class="sd">        infected: Integer that keeps the count of the infected individuals</span>
 <span class="sd">            in the simulation.</span>
+<span class="sd">        infection_probability: Float that stores the current infection</span>
+<span class="sd">            probability value. Initialized to 0.2.</span>
 <span class="sd">        individual_size: The size of an individual in the canvas. It also</span>
 <span class="sd">            determines how close a healthy individual needs to be to an</span>
 <span class="sd">            infected one to get infected. Ignored in the InfectedIndividual</span>
@@ -116,7 +118,6 @@
 <span class="sd">            Initialized to the rgba value of red.</span>
 <span class="sd">        recovered_color: The color of an infected individual in the canvas.</span>
 <span class="sd">            Initialized to the rgba value of green.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -128,6 +129,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_population</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_healthy</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_infected</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_infection_probability</span> <span class="o">=</span> <span class="mf">0.2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_individual_size</span> <span class="o">=</span> <span class="n">Window</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mf">.035</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_healthy_color</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">.3</span><span class="p">,</span> <span class="mf">.7</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_infected_color</span> <span class="o">=</span> <span class="p">[</span><span class="mf">.85</span><span class="p">,</span> <span class="mf">.07</span><span class="p">,</span> <span class="mf">.23</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
@@ -172,6 +174,14 @@
     <span class="nd">@healthy</span><span class="o">.</span><span class="n">deleter</span>
     <span class="k">def</span> <span class="nf">healthy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_healthy</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">infection_probability</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_infection_probability</span>
+
+    <span class="nd">@infection_probability</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">infection_probability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infection_probability</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_infection_probability</span> <span class="o">=</span> <span class="n">infection_probability</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">threads</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -241,7 +251,7 @@
     <span class="k">def</span> <span class="nf">safe_sum_healthy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">healthy_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Method that safely increases or decreases the healthy individual</span>
 <span class="sd">            count, using &quot;with lock&quot; to avoid race condition. It also updates</span>
-<span class="sd">            the value of the healthy individual count Label in the menu.</span>
+<span class="sd">            the value of the healthy individual count Label in the menu_bottom.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            healthy_number (int): The number of healthy individuals to</span>
@@ -252,15 +262,15 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">lock</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">healthy</span> <span class="o">+=</span> <span class="n">healthy_number</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="o">.</span><span class="n">lbl_value_healthy</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span>
-                <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="o">.</span><span class="n">lbl_value_healthy</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="o">+</span> <span class="n">healthy_number</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">menu_bottom</span><span class="o">.</span><span class="n">lbl_value_healthy</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span>
+                <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menu_bottom</span><span class="o">.</span><span class="n">lbl_value_healthy</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="o">+</span> <span class="n">healthy_number</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">healthy</span></div>
 
 <div class="viewcode-block" id="Simulation.safe_sum_infected"><a class="viewcode-back" href="../../infection.html#infection.simulation.Simulation.safe_sum_infected">[docs]</a>    <span class="nd">@debugging_decorator</span>
     <span class="k">def</span> <span class="nf">safe_sum_infected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infected_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Method that safely increases or decreases the infected individual</span>
 <span class="sd">            count, using &quot;with lock&quot; to avoid race condition. It also updates</span>
-<span class="sd">            the value of the infected individual count Label in the menu.</span>
+<span class="sd">            the value of the infected individual count Label in the menu_bottom</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            infected_number (int): The number of infected individuals to</span>
@@ -271,8 +281,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">lock</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">infected</span> <span class="o">+=</span> <span class="n">infected_number</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="o">.</span><span class="n">lbl_value_infected</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span>
-                <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="o">.</span><span class="n">lbl_value_infected</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="o">+</span> <span class="n">infected_number</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">menu_bottom</span><span class="o">.</span><span class="n">lbl_value_infected</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span>
+                <span class="nb">int</span><span class="p">(</span>
+                 <span class="bp">self</span><span class="o">.</span><span class="n">menu_bottom</span><span class="o">.</span><span class="n">lbl_value_infected</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="o">+</span> <span class="n">infected_number</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">infected</span></div>
 
 <div class="viewcode-block" id="Simulation.reset_population"><a class="viewcode-back" href="../../infection.html#infection.simulation.Simulation.reset_population">[docs]</a>    <span class="nd">@debugging_decorator</span>
@@ -284,9 +295,9 @@
 <span class="sd">            self.population (list): An empty list after the population</span>
 <span class="sd">                was deleted.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="o">.</span><span class="n">lbl_value_population</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="o">.</span><span class="n">lbl_value_healthy</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="o">.</span><span class="n">lbl_value_infected</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">menu_bottom</span><span class="o">.</span><span class="n">lbl_value_population</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">menu_bottom</span><span class="o">.</span><span class="n">lbl_value_healthy</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">menu_bottom</span><span class="o">.</span><span class="n">lbl_value_infected</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">thread_pool</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">thread_pool</span> <span class="o">=</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span>
             <span class="n">max_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
@@ -312,17 +323,17 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            self.healthy (int): The final count of healthy individuals.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="o">.</span><span class="n">lbl_value_population</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span>
-            <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="o">.</span><span class="n">lbl_value_population</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="o">+</span> <span class="n">number</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">menu_bottom</span><span class="o">.</span><span class="n">lbl_value_population</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span>
+            <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menu_bottom</span><span class="o">.</span><span class="n">lbl_value_population</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="o">+</span> <span class="n">number</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">safe_sum_healthy</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">canvas</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number</span><span class="p">):</span>
                 <span class="n">coordinate</span> <span class="o">=</span> <span class="p">(</span><span class="n">uniform</span><span class="p">(</span>
                     <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">menu_right</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">individual_size</span><span class="p">),</span>
-                    <span class="n">uniform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">height</span><span class="p">))</span>
-                <span class="n">healthy_individual</span> <span class="o">=</span> <span class="n">HealthyIndividual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="o">.</span><span class="n">lbl_sldr_infection_probability</span><span class="o">.</span><span class="n">text</span><span class="p">))</span>
+                    <span class="n">uniform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menu_bottom</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">height</span><span class="p">))</span>
+                <span class="n">healthy_individual</span> <span class="o">=</span> <span class="n">HealthyIndividual</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">infection_probability</span><span class="p">)</span>
                 <span class="n">circular_button</span> <span class="o">=</span> <span class="n">CircularButton</span><span class="p">(</span>
                     <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">individual_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">individual_size</span><span class="p">),</span>
                     <span class="n">pos</span><span class="o">=</span><span class="n">coordinate</span><span class="p">,</span>
@@ -351,15 +362,15 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            self.infected (int): The final count of infected individuals.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="o">.</span><span class="n">lbl_value_population</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span>
-            <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="o">.</span><span class="n">lbl_value_population</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="o">+</span> <span class="n">number</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">menu_bottom</span><span class="o">.</span><span class="n">lbl_value_population</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span>
+            <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menu_bottom</span><span class="o">.</span><span class="n">lbl_value_population</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="o">+</span> <span class="n">number</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">safe_sum_infected</span><span class="p">(</span><span class="n">number</span><span class="p">)</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">canvas</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number</span><span class="p">):</span>
                 <span class="n">coordinate</span> <span class="o">=</span> <span class="p">(</span><span class="n">uniform</span><span class="p">(</span>
                     <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">menu_right</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">individual_size</span><span class="p">),</span>
-                    <span class="n">uniform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">height</span><span class="p">))</span>
+                    <span class="n">uniform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menu_bottom</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">height</span><span class="p">))</span>
                 <span class="n">infected_individual</span> <span class="o">=</span> <span class="n">InfectedIndividual</span><span class="p">(</span><span class="n">simulation</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
                 <span class="n">circular_button</span> <span class="o">=</span> <span class="n">CircularButton</span><span class="p">(</span>
                     <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">individual_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">individual_size</span><span class="p">),</span>
@@ -423,9 +434,9 @@
                                     <span class="n">orientation</span><span class="o">=</span><span class="s1">&#39;vertical&#39;</span><span class="p">,</span>
                                     <span class="n">size_hint</span><span class="o">=</span><span class="p">(</span><span class="mf">.1</span><span class="p">,</span> <span class="mf">.7</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menu_right</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">menu</span> <span class="o">=</span> <span class="n">MenuBottom</span><span class="p">(</span><span class="n">size_hint</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">menu_bottom</span> <span class="o">=</span> <span class="n">MenuBottom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size_hint</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menu_bottom</span><span class="p">)</span>
         <span class="n">Clock</span><span class="o">.</span><span class="n">schedule_interval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mf">60.0</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span></div></div>
 </pre></div>

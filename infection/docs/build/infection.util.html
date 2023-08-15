@@ -174,9 +174,9 @@ their flexibility and automatic reference. The program will not work
 if regular Python properties are used. For more information visit
 <a class="reference external" href="https://kivy.org/doc/stable/api-kivy.properties.html#kivy.properties.ReferenceListProperty">https://kivy.org/doc/stable/api-kivy.properties.html#kivy.properties.ReferenceListProperty</a></p>
 <dl class="simple">
-<dt>direction_x: Kivy NumericProperty that stores the direction in the</dt><dd><p>x axis. Initialized to 0.</p>
+<dt>direction_x: Kivy NumericProperty that stores the direction in the</dt><dd><p>‘x’ axis. Initialized to 0.</p>
 </dd>
-<dt>direction_y: Kivy NumericProperty that stores the direction in the</dt><dd><p>y axis. Initialized to 0.</p>
+<dt>direction_y: Kivy NumericProperty that stores the direction in the</dt><dd><p>‘y’ axis. Initialized to 0.</p>
 </dd>
 <dt>direction: Kivy ReferenceListProperty linked to the direction_x</dt><dd><p>and direction_y Kivy properties, to update its value automatically
 whenever either of them changes, and vice versa.</p>
@@ -349,8 +349,8 @@ direction is inverted by multiplying it by -1 to simulate a
 “bounce” against the edge.</p>
 </dd>
 <dt>Args:</dt><dd><p>sim (simulation): Instance of the main simulation app class
-to access the menu’s height and the root widget’s height and width
-to check if the button is at the edge of the canvas.</p>
+to access the menu_bottom’s height and the root widget’s height
+and width to check if the button is at the edge of the canvas.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -701,14 +701,17 @@ infected.</p>
 properties, and its methods.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="infection.util.menu_bottom.MenuBottom">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">infection.util.menu_bottom.</span></span><span class="sig-name descname"><span class="pre">MenuBottom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/infection/util/menu_bottom.html#MenuBottom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#infection.util.menu_bottom.MenuBottom" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">infection.util.menu_bottom.</span></span><span class="sig-name descname"><span class="pre">MenuBottom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="infection.html#infection.simulation.Simulation" title="infection.simulation.Simulation"><span class="pre">Simulation</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/infection/util/menu_bottom.html#MenuBottom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#infection.util.menu_bottom.MenuBottom" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BoxLayout</span></code></p>
-<dl class="simple">
+<dl>
 <dt>This is the definition of the Menu class. It inherits from the</dt><dd><p>BoxLayout Kivy class.</p>
 </dd>
-<dt>Attributes:</dt><dd><dl class="simple">
-<dt>lbl_infection_probability: Kivy Label to identify the infection</dt><dd><p>probability in the menu.</p>
-</dd>
+<dt>Attributes:</dt><dd><p>simulation: Here we store the instance of the Simulation class.
+lbl_infection_probability: Kivy Label to identify the infection</p>
+<blockquote>
+<div><p>probability in the menu.</p>
+</div></blockquote>
+<dl class="simple">
 <dt>lbl_sldr_infection_probability: Kivy Label that displays the value</dt><dd><p>of the simulation’s infection probility.</p>
 </dd>
 <dt>sldr_infection_probability: Kivy Slider that allows the user to</dt><dd><p>set the infection probability. Its value is bound to the Label

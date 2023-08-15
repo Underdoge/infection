@@ -38,6 +38,8 @@ class Simulation(App):
             in the simulation.
         infected: Integer that keeps the count of the infected individuals
             in the simulation.
+        infection_probability: Float that stores the current infection
+            probability value. Initialized to 0.2.
         individual_size: The size of an individual in the canvas. It also
             determines how close a healthy individual needs to be to an
             infected one to get infected. Ignored in the InfectedIndividual
@@ -59,6 +61,7 @@ class Simulation(App):
         self._population = []
         self._healthy = 0
         self._infected = 0
+        self._infection_probability = 0.2
         self._individual_size = Window.size[1] * .035
         self._healthy_color = [0, .3, .7, 1]
         self._infected_color = [.85, .07, .23, 1]
@@ -103,6 +106,14 @@ class Simulation(App):
     @healthy.deleter
     def healthy(self) -> None:
         self._healthy = 0
+
+    @property
+    def infection_probability(self) -> float:
+        return self._infection_probability
+
+    @infection_probability.setter
+    def infection_probability(self, infection_probability: float) -> None:
+        self._infection_probability = infection_probability
 
     @property
     def threads(self) -> int:
@@ -169,29 +180,29 @@ class Simulation(App):
         self._recovered_color = recovered_color
 
     @debugging_decorator
-    def safe_sum_healthy(self, healthy_number: int) -> int:
+    def safe_sum_healthy(self, healthy_num: int) -> int:
         """ Method that safely increases or decreases the healthy individual
             count, using "with lock" to avoid race condition. It also updates
-            the value of the healthy individual count Label in the menu.
+            the value of the healthy individual count Label in the menu_bottom.
 
         Args:
-            healthy_number (int): The number of healthy individuals to
+            healthy_num (int): The number of healthy individuals to
             increase or decrease.
 
         Returns:
             self.healthy (int): The final count of healthy individuals.
         """
         with lock:
-            self.healthy += healthy_number
-            self.menu.lbl_value_healthy.text = str(
-                int(self.menu.lbl_value_healthy.text) + healthy_number)
+            self.healthy += healthy_num
+            self.menu_bottom.lbl_value_healthy.text = str(
+                int(self.menu_bottom.lbl_value_healthy.text) + healthy_num)
         return self.healthy
 
     @debugging_decorator
-    def safe_sum_infected(self, infected_number: int) -> int:
+    def safe_sum_infected(self, infected_num: int) -> int:
         """ Method that safely increases or decreases the infected individual
             count, using "with lock" to avoid race condition. It also updates
-            the value of the infected individual count Label in the menu.
+            the value of the infected individual count Label in the menu_bottom
 
         Args:
             infected_number (int): The number of infected individuals to
@@ -201,9 +212,10 @@ class Simulation(App):
             self.infected (int): The final count of infected individuals.
         """
         with lock:
-            self.infected += infected_number
-            self.menu.lbl_value_infected.text = str(
-                int(self.menu.lbl_value_infected.text) + infected_number)
+            self.infected += infected_num
+            self.menu_bottom.lbl_value_infected.text = str(
+                int(
+                    self.menu_bottom.lbl_value_infected.text) + infected_num)
         return self.infected
 
     @debugging_decorator
@@ -215,9 +227,9 @@ class Simulation(App):
             self.population (list): An empty list after the population
                 was deleted.
         """
-        self.menu.lbl_value_population.text = "0"
-        self.menu.lbl_value_healthy.text = "0"
-        self.menu.lbl_value_infected.text = "0"
+        self.menu_bottom.lbl_value_population.text = "0"
+        self.menu_bottom.lbl_value_healthy.text = "0"
+        self.menu_bottom.lbl_value_infected.text = "0"
         self.thread_pool.shutdown()
         self.thread_pool = ThreadPoolExecutor(
             max_workers=4)
@@ -243,17 +255,17 @@ class Simulation(App):
         Returns:
             self.healthy (int): The final count of healthy individuals.
         """
-        self.menu.lbl_value_population.text = str(
-            int(self.menu.lbl_value_population.text) + number)
+        self.menu_bottom.lbl_value_population.text = str(
+            int(self.menu_bottom.lbl_value_population.text) + number)
         self.safe_sum_healthy(number)
         with self.layout.canvas:
             for x in range(number):
                 coordinate = (uniform(
                     0, self.layout.width -
                     self.menu_right.width - self.individual_size),
-                    uniform(self.menu.height, self.layout.height))
-                healthy_individual = HealthyIndividual(self, float(
-                    self.menu.lbl_sldr_infection_probability.text))
+                    uniform(self.menu_bottom.height, self.layout.height))
+                healthy_individual = HealthyIndividual(
+                    self, self.infection_probability)
                 circular_button = CircularButton(
                     size=(self.individual_size, self.individual_size),
                     pos=coordinate,
@@ -282,15 +294,15 @@ class Simulation(App):
         Returns:
             self.infected (int): The final count of infected individuals.
         """
-        self.menu.lbl_value_population.text = str(
-            int(self.menu.lbl_value_population.text) + number)
+        self.menu_bottom.lbl_value_population.text = str(
+            int(self.menu_bottom.lbl_value_population.text) + number)
         self.safe_sum_infected(number)
         with self.layout.canvas:
             for x in range(number):
                 coordinate = (uniform(
                     0, self.layout.width -
                     self.menu_right.width - self.individual_size),
-                    uniform(self.menu.height, self.layout.height))
+                    uniform(self.menu_bottom.height, self.layout.height))
                 infected_individual = InfectedIndividual(simulation=self)
                 circular_button = CircularButton(
                     size=(self.individual_size, self.individual_size),
@@ -354,8 +366,8 @@ class Simulation(App):
                                     orientation='vertical',
                                     size_hint=(.1, .7))
         self.layout.add_widget(self.menu_right)
-        self.menu = MenuBottom(size_hint=(1, 0.2))
+        self.menu_bottom = MenuBottom(self, size_hint=(1, 0.2))
         self.root.add_widget(self.layout)
-        self.root.add_widget(self.menu)
+        self.root.add_widget(self.menu_bottom)
         Clock.schedule_interval(self.update, 1.0 / 60.0)
         return self.root

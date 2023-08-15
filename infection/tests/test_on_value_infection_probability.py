@@ -21,13 +21,15 @@ def simulation_instance() -> Simulation:
 def test_on_value_infection_probability(
         simulation_instance: Simulation) -> None:
     """ This method will test if on_value_infection_probability correctly
-        updates the text of the infection probability value Label to the
-        value of the Slider when it changes.
+        updates the simulation.infection_probability value and the text of
+        the infection probability value Label to the value of the Slider
+        when it changes.
 
     Args:
         simulation_instance (Simulation): An instance of the simulation class.
     """
     simulation = simulation_instance
-    simulation.menu.sldr_infection_probability.value = 10
+    simulation.menu_bottom.sldr_infection_probability.value = 10
 
-    assert simulation.menu.lbl_sldr_infection_probability.text == "1.0"
+    assert simulation.infection_probability == 1.0
+    assert simulation.menu_bottom.lbl_sldr_infection_probability.text == "1.0"
