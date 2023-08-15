@@ -348,12 +348,12 @@ simulation.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="infection.simulation.Simulation.safe_sum_healthy">
-<span class="sig-name descname"><span class="pre">safe_sum_healthy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">healthy_number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/infection/simulation.html#Simulation.safe_sum_healthy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#infection.simulation.Simulation.safe_sum_healthy" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">safe_sum_healthy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/infection/simulation.html#Simulation.safe_sum_healthy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#infection.simulation.Simulation.safe_sum_healthy" title="Permalink to this definition"></a></dt>
 <dd><dl class="simple">
 <dt>Method that safely increases or decreases the healthy individual</dt><dd><p>count, using “with lock” to avoid race condition. It also updates
 the value of the healthy individual count Label in the menu_bottom.</p>
 </dd>
-<dt>Args:</dt><dd><p>healthy_number (int): The number of healthy individuals to
+<dt>Args:</dt><dd><p>number (int): The number of healthy individuals to
 increase or decrease.</p>
 </dd>
 <dt>Returns:</dt><dd><p>self.healthy (int): The final count of healthy individuals.</p>
@@ -363,12 +363,12 @@ increase or decrease.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="infection.simulation.Simulation.safe_sum_infected">
-<span class="sig-name descname"><span class="pre">safe_sum_infected</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">infected_number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/infection/simulation.html#Simulation.safe_sum_infected"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#infection.simulation.Simulation.safe_sum_infected" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">safe_sum_infected</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="_modules/infection/simulation.html#Simulation.safe_sum_infected"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#infection.simulation.Simulation.safe_sum_infected" title="Permalink to this definition"></a></dt>
 <dd><dl class="simple">
 <dt>Method that safely increases or decreases the infected individual</dt><dd><p>count, using “with lock” to avoid race condition. It also updates
 the value of the infected individual count Label in the menu_bottom</p>
 </dd>
-<dt>Args:</dt><dd><p>infected_number (int): The number of infected individuals to
+<dt>Args:</dt><dd><p>number (int): The number of infected individuals to
 increase or decrease.</p>
 </dd>
 <dt>Returns:</dt><dd><p>self.infected (int): The final count of infected individuals.</p>

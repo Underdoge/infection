@@ -248,42 +248,42 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_recovered_color</span> <span class="o">=</span> <span class="n">recovered_color</span>
 
 <div class="viewcode-block" id="Simulation.safe_sum_healthy"><a class="viewcode-back" href="../../infection.html#infection.simulation.Simulation.safe_sum_healthy">[docs]</a>    <span class="nd">@debugging_decorator</span>
-    <span class="k">def</span> <span class="nf">safe_sum_healthy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">healthy_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">safe_sum_healthy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Method that safely increases or decreases the healthy individual</span>
 <span class="sd">            count, using &quot;with lock&quot; to avoid race condition. It also updates</span>
 <span class="sd">            the value of the healthy individual count Label in the menu_bottom.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            healthy_number (int): The number of healthy individuals to</span>
+<span class="sd">            number (int): The number of healthy individuals to</span>
 <span class="sd">            increase or decrease.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            self.healthy (int): The final count of healthy individuals.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">lock</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">healthy</span> <span class="o">+=</span> <span class="n">healthy_number</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">healthy</span> <span class="o">+=</span> <span class="n">number</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">menu_bottom</span><span class="o">.</span><span class="n">lbl_value_healthy</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span>
-                <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menu_bottom</span><span class="o">.</span><span class="n">lbl_value_healthy</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="o">+</span> <span class="n">healthy_number</span><span class="p">)</span>
+                <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menu_bottom</span><span class="o">.</span><span class="n">lbl_value_healthy</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="o">+</span> <span class="n">number</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">healthy</span></div>
 
 <div class="viewcode-block" id="Simulation.safe_sum_infected"><a class="viewcode-back" href="../../infection.html#infection.simulation.Simulation.safe_sum_infected">[docs]</a>    <span class="nd">@debugging_decorator</span>
-    <span class="k">def</span> <span class="nf">safe_sum_infected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infected_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">safe_sum_infected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Method that safely increases or decreases the infected individual</span>
 <span class="sd">            count, using &quot;with lock&quot; to avoid race condition. It also updates</span>
 <span class="sd">            the value of the infected individual count Label in the menu_bottom</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            infected_number (int): The number of infected individuals to</span>
+<span class="sd">            number (int): The number of infected individuals to</span>
 <span class="sd">            increase or decrease.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            self.infected (int): The final count of infected individuals.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">lock</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">infected</span> <span class="o">+=</span> <span class="n">infected_number</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">infected</span> <span class="o">+=</span> <span class="n">number</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">menu_bottom</span><span class="o">.</span><span class="n">lbl_value_infected</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span>
                 <span class="nb">int</span><span class="p">(</span>
-                 <span class="bp">self</span><span class="o">.</span><span class="n">menu_bottom</span><span class="o">.</span><span class="n">lbl_value_infected</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="o">+</span> <span class="n">infected_number</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">menu_bottom</span><span class="o">.</span><span class="n">lbl_value_infected</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="o">+</span> <span class="n">number</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">infected</span></div>
 
 <div class="viewcode-block" id="Simulation.reset_population"><a class="viewcode-back" href="../../infection.html#infection.simulation.Simulation.reset_population">[docs]</a>    <span class="nd">@debugging_decorator</span>

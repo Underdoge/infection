@@ -180,42 +180,42 @@ class Simulation(App):
         self._recovered_color = recovered_color
 
     @debugging_decorator
-    def safe_sum_healthy(self, healthy_num: int) -> int:
+    def safe_sum_healthy(self, number: int) -> int:
         """ Method that safely increases or decreases the healthy individual
             count, using "with lock" to avoid race condition. It also updates
             the value of the healthy individual count Label in the menu_bottom.
 
         Args:
-            healthy_num (int): The number of healthy individuals to
+            number (int): The number of healthy individuals to
             increase or decrease.
 
         Returns:
             self.healthy (int): The final count of healthy individuals.
         """
         with lock:
-            self.healthy += healthy_num
+            self.healthy += number
             self.menu_bottom.lbl_value_healthy.text = str(
-                int(self.menu_bottom.lbl_value_healthy.text) + healthy_num)
+                int(self.menu_bottom.lbl_value_healthy.text) + number)
         return self.healthy
 
     @debugging_decorator
-    def safe_sum_infected(self, infected_num: int) -> int:
+    def safe_sum_infected(self, number: int) -> int:
         """ Method that safely increases or decreases the infected individual
             count, using "with lock" to avoid race condition. It also updates
             the value of the infected individual count Label in the menu_bottom
 
         Args:
-            infected_number (int): The number of infected individuals to
+            number (int): The number of infected individuals to
             increase or decrease.
 
         Returns:
             self.infected (int): The final count of infected individuals.
         """
         with lock:
-            self.infected += infected_num
+            self.infected += number
             self.menu_bottom.lbl_value_infected.text = str(
                 int(
-                    self.menu_bottom.lbl_value_infected.text) + infected_num)
+                    self.menu_bottom.lbl_value_infected.text) + number)
         return self.infected
 
     @debugging_decorator
