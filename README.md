@@ -72,5 +72,7 @@ python -m pytest -v
 - Python 3.7 or greater
 - Git (to clone the repo)
 #
+# Documentation
+[Underdoge's infection @ GitHub Pages](https://underdoge.github.io/infection)
 # Unsupported
 - The use of the Windows Subsystem for Linux (WSL) is not supported because it provides very poor performance for the Kivy module and causes several graphical glitches, however, you can run this program in Windows with Python natively without any issues.
