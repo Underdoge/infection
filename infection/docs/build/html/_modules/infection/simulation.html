@@ -5,12 +5,12 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>infection.simulation &#8212; infection 1.0.0 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b76e3c8a" />
-    <link rel="stylesheet" type="text/css" href="../../_static/classic.css?v=89b800e6" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css" />
     
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=af2ce170"></script>
-    <script src="../../_static/doctools.js?v=888ff710"></script>
-    <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -39,6 +39,7 @@
 <span></span><span class="sd">&quot;&quot;&quot; This module defines the Simulation class and all of its properties</span>
 <span class="sd">    and methods. This is the main class that controls the simulation.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 <span class="kn">from</span> <span class="nn">quads</span> <span class="kn">import</span> <span class="n">QuadTree</span>
 <span class="kn">from</span> <span class="nn">infection.decorators.debugging_decorator</span> <span class="kn">import</span> <span class="n">debugging_decorator</span>
 <span class="kn">from</span> <span class="nn">infection.util.menu_bottom</span> <span class="kn">import</span> <span class="n">MenuBottom</span>
@@ -85,6 +86,7 @@
 <span class="sd">            Initialized to the rgba value of red.</span>
 <span class="sd">        recovered_color: The color of an infected individual in the canvas.</span>
 <span class="sd">            Initialized to the rgba value of green.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -102,118 +104,121 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_recovered_color</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">quadtree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">quadtree</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QuadTree</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_quadtree</span>
 
     <span class="nd">@quadtree</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">quadtree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quadtree</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">quadtree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quadtree</span><span class="p">:</span> <span class="n">QuadTree</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_quadtree</span> <span class="o">=</span> <span class="n">quadtree</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">thread_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">thread_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ThreadPoolExecutor</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_thread_pool</span>
 
     <span class="nd">@thread_pool</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">thread_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">thread_pool</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">thread_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">thread_pool</span><span class="p">:</span> <span class="n">ThreadPoolExecutor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_thread_pool</span> <span class="o">=</span> <span class="n">thread_pool</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">infected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">infected</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_infected</span>
 
     <span class="nd">@infected</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">infected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infected_number</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">infected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infected_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_infected</span> <span class="o">=</span> <span class="n">infected_number</span>
 
     <span class="nd">@infected</span><span class="o">.</span><span class="n">deleter</span>
-    <span class="k">def</span> <span class="nf">infected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">infected</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_infected</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">healthy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">healthy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_healthy</span>
 
     <span class="nd">@healthy</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">healthy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">healthy_number</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">healthy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">healthy_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_healthy</span> <span class="o">=</span> <span class="n">healthy_number</span>
 
     <span class="nd">@healthy</span><span class="o">.</span><span class="n">deleter</span>
-    <span class="k">def</span> <span class="nf">healthy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">healthy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_healthy</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">threads</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">threads</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_threads</span>
 
     <span class="nd">@threads</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">threads</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threads</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">threads</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threads</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_threads</span> <span class="o">=</span> <span class="n">threads</span>
 
     <span class="nd">@threads</span><span class="o">.</span><span class="n">deleter</span>
-    <span class="k">def</span> <span class="nf">threads</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">threads</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_threads</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">population</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">population</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_population</span>
 
     <span class="nd">@population</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_population</span> <span class="o">=</span> <span class="n">population</span>
 
     <span class="nd">@population</span><span class="o">.</span><span class="n">deleter</span>
-    <span class="k">def</span> <span class="nf">population</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">population</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_population</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">infection_radius</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">infection_radius</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_infection_radius</span>
 
     <span class="nd">@infection_radius</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">infection_radius</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infection_radius</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">infection_radius</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infection_radius</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_infection_radius</span> <span class="o">=</span> <span class="n">infection_radius</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">individual_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">individual_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_individual_size</span>
 
     <span class="nd">@individual_size</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">individual_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individual_size</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">individual_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individual_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_individual_size</span> <span class="o">=</span> <span class="n">individual_size</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">healthy_color</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">healthy_color</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_healthy_color</span>
 
     <span class="nd">@healthy_color</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">healthy_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">healthy_color</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">healthy_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">healthy_color</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_healthy_color</span> <span class="o">=</span> <span class="n">healthy_color</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">infected_color</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">infected_color</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_infected_color</span>
 
     <span class="nd">@infected_color</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">infected_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infected_color</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">infected_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infected_color</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_infected_color</span> <span class="o">=</span> <span class="n">infected_color</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">recovered_color</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">recovered_color</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recovered_color</span>
 
     <span class="nd">@recovered_color</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">recovered_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recovered_color</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">recovered_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recovered_color</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_recovered_color</span> <span class="o">=</span> <span class="n">recovered_color</span>
 
 <div class="viewcode-block" id="Simulation.safe_sum_healthy"><a class="viewcode-back" href="../../infection.html#infection.simulation.Simulation.safe_sum_healthy">[docs]</a>    <span class="nd">@debugging_decorator</span>
-    <span class="k">def</span> <span class="nf">safe_sum_healthy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">healthy_number</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">safe_sum_healthy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">healthy_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Method that safely increases or decreases the healthy individual</span>
 <span class="sd">            count, using &quot;with lock&quot; to avoid race condition. It also updates</span>
 <span class="sd">            the value of the healthy individual count Label in the menu.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            healthy_number (Integer): The number of healthy individuals to</span>
+<span class="sd">            healthy_number (int): The number of healthy individuals to</span>
 <span class="sd">            increase or decrease.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            self.healthy (int): The final count of healthy individuals.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">lock</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">healthy</span> <span class="o">+=</span> <span class="n">healthy_number</span>
@@ -222,14 +227,17 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">healthy</span></div>
 
 <div class="viewcode-block" id="Simulation.safe_sum_infected"><a class="viewcode-back" href="../../infection.html#infection.simulation.Simulation.safe_sum_infected">[docs]</a>    <span class="nd">@debugging_decorator</span>
-    <span class="k">def</span> <span class="nf">safe_sum_infected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infected_number</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">safe_sum_infected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infected_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Method that safely increases or decreases the infected individual</span>
 <span class="sd">            count, using &quot;with lock&quot; to avoid race condition. It also updates</span>
 <span class="sd">            the value of the infected individual count Label in the menu.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            infected_number (Integer): The number of infected individuals to</span>
+<span class="sd">            infected_number (int): The number of infected individuals to</span>
 <span class="sd">            increase or decrease.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            self.infected (int): The final count of infected individuals.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="n">lock</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">infected</span> <span class="o">+=</span> <span class="n">infected_number</span>
@@ -238,9 +246,13 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">infected</span></div>
 
 <div class="viewcode-block" id="Simulation.reset_population"><a class="viewcode-back" href="../../infection.html#infection.simulation.Simulation.reset_population">[docs]</a>    <span class="nd">@debugging_decorator</span>
-    <span class="k">def</span> <span class="nf">reset_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">largs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">reset_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">largs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Method that resets all the simulation&#39;s properties to their</span>
 <span class="sd">            initial states and values.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            self.population (list): An empty list after the population</span>
+<span class="sd">                was deleted.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="o">.</span><span class="n">lbl_value_population</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="o">.</span><span class="n">lbl_value_healthy</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span>
@@ -258,14 +270,17 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">population</span></div>
 
 <div class="viewcode-block" id="Simulation.add_healthy"><a class="viewcode-back" href="../../infection.html#infection.simulation.Simulation.add_healthy">[docs]</a>    <span class="nd">@debugging_decorator</span>
-    <span class="k">def</span> <span class="nf">add_healthy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">,</span> <span class="o">*</span><span class="n">largs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">add_healthy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="n">largs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Method that adds new healthy individuals to the simulation. The</span>
 <span class="sd">            number of individuals added is determined by the provided &quot;number&quot;</span>
 <span class="sd">            argument.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            number (Integer): The number of healthy individuals to add to the</span>
+<span class="sd">            number (int): The number of healthy individuals to add to the</span>
 <span class="sd">            simulation.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            self.healthy (int): The final count of healthy individuals.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="o">.</span><span class="n">lbl_value_population</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span>
             <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="o">.</span><span class="n">lbl_value_population</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="o">+</span> <span class="n">number</span><span class="p">)</span>
@@ -294,14 +309,17 @@
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">healthy</span></div>
 
 <div class="viewcode-block" id="Simulation.add_infected"><a class="viewcode-back" href="../../infection.html#infection.simulation.Simulation.add_infected">[docs]</a>    <span class="nd">@debugging_decorator</span>
-    <span class="k">def</span> <span class="nf">add_infected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">,</span> <span class="o">*</span><span class="n">largs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">add_infected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="n">largs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Method that adds new infected individuals to the simulation. The</span>
 <span class="sd">            number of individuals added is determined by the provided &quot;number&quot;</span>
 <span class="sd">            argument.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            number (Integer): The number of infected individuals to add to the</span>
+<span class="sd">            number (int): The number of infected individuals to add to the</span>
 <span class="sd">            simulation.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            self.infected (int): The final count of infected individuals.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="o">.</span><span class="n">lbl_value_population</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span>
             <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="o">.</span><span class="n">lbl_value_population</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="o">+</span> <span class="n">number</span><span class="p">)</span>
@@ -327,7 +345,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">population</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">circular_button</span><span class="p">)</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">infected</span></div>
 
-<div class="viewcode-block" id="Simulation.update"><a class="viewcode-back" href="../../infection.html#infection.simulation.Simulation.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+<div class="viewcode-block" id="Simulation.update"><a class="viewcode-back" href="../../infection.html#infection.simulation.Simulation.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Kivy method used to update the simulation on each cycle.</span>
 <span class="sd">            It uses the thread pool in self.thread_pool to spawn threads to</span>
 <span class="sd">            control the infection state and movement of each individual in</span>
@@ -361,13 +379,13 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">threads</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">())</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Threads: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">threads</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Simulation.build"><a class="viewcode-back" href="../../infection.html#infection.simulation.Simulation.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Simulation.build"><a class="viewcode-back" href="../../infection.html#infection.simulation.Simulation.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BoxLayout</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Kivy method that initializes and integrates all the components of</span>
 <span class="sd">            the Simulation App instance and its graphical components.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            root (BoxLayout): An instance of the root Kivy widget that</span>
-<span class="sd">            contains all the graphical components of the simulation.</span>
+<span class="sd">            self.root (BoxLayout): An instance of the root Kivy widget that</span>
+<span class="sd">                contains all the graphical components of the simulation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">BoxLayout</span><span class="p">(</span><span class="n">orientation</span><span class="o">=</span><span class="s1">&#39;vertical&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="n">AnchorLayout</span><span class="p">(</span><span class="n">anchor_x</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">anchor_y</span><span class="o">=</span><span class="s1">&#39;top&#39;</span><span class="p">)</span>
@@ -375,7 +393,7 @@
                                     <span class="n">orientation</span><span class="o">=</span><span class="s1">&#39;vertical&#39;</span><span class="p">,</span>
                                     <span class="n">size_hint</span><span class="o">=</span><span class="p">(</span><span class="mf">.1</span><span class="p">,</span> <span class="mf">.7</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menu_right</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">menu</span> <span class="o">=</span> <span class="n">MenuBottom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size_hint</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">menu</span> <span class="o">=</span> <span class="n">MenuBottom</span><span class="p">(</span><span class="n">size_hint</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">add_widget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="p">)</span>
         <span class="n">Clock</span><span class="o">.</span><span class="n">schedule_interval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mf">60.0</span><span class="p">)</span>
@@ -417,8 +435,8 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-    &#169; Copyright 2023, Eduardo Chapa (Underdoge).
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+        &#169; Copyright 2023, Eduardo Chapa (Underdoge).
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.1.
     </div>
   </body>
 </html>
