@@ -29,7 +29,7 @@ class Simulation(App):
 
     Attributes:
         thread_pool: A ThreadPoolExecutor instance to spawn new threads
-            as required for the simulation, with a maximum of 200 workers.
+            as required for the simulation, with a maximum of 4 workers.
         threads: Integer that keeps the count of the spawned threads.
         quadtree: A QuadTree structure that contains the positions of all the
             individuals in the simulation for fast neighbor search.
