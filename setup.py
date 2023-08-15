@@ -1,5 +1,4 @@
-""" This module is used to create the infection distribution package to create
-    the Sphinx documentation.
+""" This module is used to create the infection distribution package.
 """
 from setuptools import setup
 
