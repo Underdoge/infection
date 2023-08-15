@@ -1,6 +1,10 @@
 """ The following module is the definition of the MenuRight class, its
     properties, and its methods.
 """
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from infection.simulation import Simulation
 from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
 from functools import partial
@@ -58,7 +62,7 @@ class MenuRight(BoxLayout):
             btn_save_recovered_color widgets.
     """
 
-    def __init__(self, simulation, **kwargs):
+    def __init__(self, simulation: Simulation, **kwargs):
         super(MenuRight, self).__init__(**kwargs)
         self.simulation = simulation
         self.btn_add_healthy = Button(text='    +1\nHealthy',
@@ -144,7 +148,7 @@ class MenuRight(BoxLayout):
         self.add_widget(self.btn_recovered_color)
         self.add_widget(self.btn_reset)
 
-    def show_healthy_color_picker(self, instance):
+    def show_healthy_color_picker(self, instance: Button) -> None:
         """ Method that opens the popup_healthy_color_picker popup.
 
         Args:
@@ -154,7 +158,7 @@ class MenuRight(BoxLayout):
         self.healthy_clr_pkr.color = self.simulation.healthy_color
         self.popup_healthy_color_picker.open()
 
-    def show_infected_color_picker(self, instance):
+    def show_infected_color_picker(self, instance: Button) -> None:
         """ Method that opens the popup_infected_color_picker popup.
 
         Args:
@@ -164,7 +168,7 @@ class MenuRight(BoxLayout):
         self.infected_clr_pkr.color = self.simulation.infected_color
         self.popup_infected_color_picker.open()
 
-    def show_recovered_color_picker(self, instance):
+    def show_recovered_color_picker(self, instance: Button) -> None:
         """ Method that opens the popup_recovered_color_picker popup.
 
         Args:
@@ -174,14 +178,14 @@ class MenuRight(BoxLayout):
         self.recovered_clr_pkr.color = self.simulation.recovered_color
         self.popup_recovered_color_picker.open()
 
-    def save_color(self, instance, type):
+    def save_color(self, instance: Button, type: str) -> None:
         """ Method that saves the value of the color picker to its
             corresponding value in the simulation.
 
         Args:
             instance (kivy.uix.button.Button): The clicked Button's
                 instance.
-            type (String): A String that indicates the individual type.
+            type (str): A String that indicates the individual type.
         """
         match type:
             case 'healthy':
@@ -194,13 +198,13 @@ class MenuRight(BoxLayout):
                 self.simulation.recovered_color = self.recovered_clr_pkr.color
                 self.popup_recovered_color_picker.dismiss()
 
-    def cancel_color(self, instance, type):
+    def cancel_color(self, instance: Button, type: str) -> None:
         """ Method that closes the corresponding color picker popup.
 
         Args:
             instance (kivy.uix.button.Button): The clicked Button's
                 instance.
-            type (String): A String that indicates the individual type.
+            type (str): A String that indicates the individual type.
         """
         match type:
             case 'healthy':

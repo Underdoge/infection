@@ -11,7 +11,7 @@ from kivy.app import App
 
 
 @pytest.fixture
-def simulation_instance():
+def simulation_instance() -> Simulation:
     """ This is a pytest.fixture method to provide quick access to the class
         that contains the method are testing.
 
@@ -22,7 +22,7 @@ def simulation_instance():
     return simulation
 
 
-def test_build(simulation_instance):
+def test_build(simulation_instance: Simulation) -> None:
     """ This method will test if build() correctly initializes all the
         components of the Simulation App instance.
 

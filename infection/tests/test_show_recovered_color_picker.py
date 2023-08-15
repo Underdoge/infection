@@ -6,7 +6,7 @@ from infection.simulation import Simulation
 
 
 @pytest.fixture
-def simulation_instance():
+def simulation_instance() -> Simulation:
     """ This is a pytest.fixture method to provide quick access to the class
         that contains the method are testing.
 
@@ -18,7 +18,7 @@ def simulation_instance():
     return simulation
 
 
-def test_show_recovered_color_picker(simulation_instance):
+def test_show_recovered_color_picker(simulation_instance: Simulation) -> None:
     """ This method will test if show_recovered_color_picker correctly
         sets the color of the recovered_clr_pkr to the color of
         simulation_instance.recovered_color.

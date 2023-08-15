@@ -6,7 +6,7 @@ from infection.simulation import Simulation
 
 
 @pytest.fixture
-def simulation_instance():
+def simulation_instance() -> Simulation:
     """ This is a pytest.fixture method to provide quick access to the class
         that contains the method are testing.
 
@@ -18,7 +18,7 @@ def simulation_instance():
     return simulation
 
 
-def test_reset_population(simulation_instance):
+def test_reset_population(simulation_instance: Simulation) -> None:
     """ This method will test if reset_population() actually removes all the
         individuals from the simulation after adding a couple of individuals.
 

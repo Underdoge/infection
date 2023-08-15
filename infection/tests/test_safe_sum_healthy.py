@@ -7,7 +7,7 @@ from infection.simulation import Simulation
 
 
 @pytest.fixture
-def simulation_instance():
+def simulation_instance() -> Simulation:
     """ This is a pytest.fixture method to provide quick access to the class
         that contains the method are testing.
 
@@ -19,7 +19,7 @@ def simulation_instance():
     return simulation
 
 
-def test_safe_sum_healthy_add_one(simulation_instance):
+def test_safe_sum_healthy_add_one(simulation_instance: Simulation) -> None:
     """ This method will test if safe_sum_healthy(1) actually increments the
         simulation_instance.healthy counter by one.
 
@@ -31,7 +31,7 @@ def test_safe_sum_healthy_add_one(simulation_instance):
     assert simulation_instance.healthy == 1
 
 
-def test_safe_sum_healthy_remove_one(simulation_instance):
+def test_safe_sum_healthy_remove_one(simulation_instance: Simulation) -> None:
     """ This method will test if safe_sum_healthy(-1) actually decreases the
         simulation_instance.healthy counter by one.
 
@@ -43,7 +43,8 @@ def test_safe_sum_healthy_remove_one(simulation_instance):
     assert simulation_instance.healthy == -1
 
 
-def test_safe_sum_healthy_add_more_than_one(simulation_instance):
+def test_safe_sum_healthy_add_more_than_one(
+        simulation_instance: Simulation) -> None:
     """ This method will test if safe_sum_healthy(2) actually increments the
         simulation_instance.healthy counter by 2.
 
@@ -55,7 +56,8 @@ def test_safe_sum_healthy_add_more_than_one(simulation_instance):
     assert simulation_instance.healthy == 2
 
 
-def test_safe_sum_healthy_remove_more_than_one(simulation_instance):
+def test_safe_sum_healthy_remove_more_than_one(
+        simulation_instance: Simulation) -> None:
     """ This method will test if safe_sum_healthy(-2) actually decreases the
         simulation_instance.healthy counter by one.
 
@@ -67,7 +69,8 @@ def test_safe_sum_healthy_remove_more_than_one(simulation_instance):
     assert simulation_instance.healthy == -2
 
 
-def test_safe_sum_healthy_race_condition(simulation_instance):
+def test_safe_sum_healthy_race_condition(
+        simulation_instance: Simulation) -> None:
     """ This method will try to simulate a race condition and see if
         safe_sum_healthy is able to avoid it as expected.
 

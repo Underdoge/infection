@@ -2,6 +2,12 @@
     HeallthyIndividual and InfectedIndividual subclasses and all of their
     properties and methods.
 """
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from infection.simulation import Simulation
+    from infection.util.circular_button import CircularButton
+    from quads import QuadTree
 from infection.decorators.debugging_decorator import debugging_decorator
 from quads import BoundingBox
 from abc import ABC, abstractmethod
@@ -21,7 +27,7 @@ class Individual(ABC):
 
     @property
     @abstractmethod
-    def status(self):
+    def status(self) -> str:
         """ String property used to track the infection status of the
             individual.
         """
@@ -29,13 +35,13 @@ class Individual(ABC):
 
     @property
     @abstractmethod
-    def simulation(self):
+    def simulation(self) -> Simulation:
         """ To store an instance of the simulation class."""
         pass
 
     @property
     @abstractmethod
-    def recovered(self):
+    def recovered(self) -> bool:
         """ Boolean property used to track when the individual has recovered
             from an infection.
         """
@@ -43,14 +49,14 @@ class Individual(ABC):
 
     @property
     @abstractmethod
-    def time_infected(self):
+    def time_infected(self) -> int:
         """ Integer property to track how long the individual has been
             infected.
         """
         pass
 
     @abstractmethod
-    def infection(self):
+    def infection(self) -> None:
         """ Abstract method that will control the infection status of the
             individual and decide if it will get infected or if it will
             recover.
@@ -58,7 +64,7 @@ class Individual(ABC):
         pass
 
     @abstractmethod
-    def recover(self):
+    def recover(self) -> None:
         """ Abstract method that will set the properties when the individual
             recovers from infection
         """
@@ -96,7 +102,8 @@ class HealthyIndividual(Individual):
             individual. "healthy" by default.
     """
 
-    def __init__(self, simulation, infection_probability, **kwargs):
+    def __init__(self, simulation: Simulation,
+                 infection_probability: float, **kwargs):
         super(Individual, self).__init__(**kwargs)
         self._simulation = simulation
         self._infection_probability = infection_probability
@@ -108,63 +115,64 @@ class HealthyIndividual(Individual):
         self._status = "healthy"
 
     @property
-    def status(self):
+    def status(self) -> str:
         return self._status
 
     @status.setter
-    def status(self, status):
+    def status(self, status: str) -> None:
         self._status = status
 
     @property
-    def time_infected(self):
+    def time_infected(self) -> int:
         return self._time_infected
 
     @time_infected.setter
-    def time_infected(self, time_infected):
+    def time_infected(self, time_infected: int) -> None:
         self._time_infected = time_infected
 
     @property
-    def max_time_infected(self):
+    def max_time_infected(self) -> int:
         return self._max_time_infected
 
     @property
-    def cooldown(self):
+    def cooldown(self) -> int:
         return self._cooldown
 
     @cooldown.setter
-    def cooldown(self, cooldown):
+    def cooldown(self, cooldown: int) -> None:
         self._cooldown = cooldown
 
     @property
-    def max_cooldown(self):
+    def max_cooldown(self) -> int:
         return self._max_cooldown
 
     @property
-    def recovered(self):
+    def recovered(self) -> int:
         return self._recovered
 
     @recovered.setter
-    def recovered(self, recovered):
+    def recovered(self, recovered: bool) -> None:
         self._recovered = recovered
 
     @property
-    def infection_probability(self):
+    def infection_probability(self) -> float:
         return self._infection_probability
 
     @infection_probability.setter
-    def infection_probability(self, infection_probability):
+    def infection_probability(self, infection_probability: float) -> None:
         self._infection_probability = infection_probability
 
     @property
-    def simulation(self):
+    def simulation(self) -> Simulation:
         return self._simulation
 
     @simulation.setter
-    def simulation(self, simulation):
+    def simulation(self, simulation: Simulation) -> None:
         self._simulation = simulation
 
     @debugging_decorator
-    def count_infected_neighbors(self, circular_button, quad_tree):
+    def count_infected_neighbors(self, circular_button: CircularButton,
+                                 quad_tree: QuadTree) -> int:
         """ Method that searches the quad_tree to find the number of infected
             individuals within the provided radius and returns the count in
             the infected_neighbor_count variable.
@@ -175,6 +183,9 @@ class HealthyIndividual(Individual):
             quad_tree (QuadTree): A quadtree structure that contains the
                 positions of all the individuals in the simulation for fast
                 neighbor search.
+        Returns:
+            infected_neighbor_count (int): The number of infected individuals
+                within the provided radius.
         """
         infected_neighbor_count = 0
         infection_radius = circular_button.simulation.individual_size
@@ -202,7 +213,8 @@ class HealthyIndividual(Individual):
         return infected_neighbor_count
 
     @debugging_decorator
-    def evaluate_infection(self, circular_button, quad_tree):
+    def evaluate_infection(self, circular_button: CircularButton,
+                           quad_tree: QuadTree) -> tuple[int, int]:
         """ Method that calls the count_infected_neighbors method and if
             there's one or more infected neighbors, a formula is used to
             randomly calculate if the individual should get infected based on
@@ -214,6 +226,11 @@ class HealthyIndividual(Individual):
             quad_tree (QuadTree): A quadtree structure that contains the
                 positions of all the individuals in the simulation for fast
                 neighbor search.
+
+        Returns:
+            infected (int): 0 if not infected, 1 or more if infected.
+            infected_neighbor_count: The number of infected individuals
+                within the provided radius.
         """
         infected_neighbor_count = self.count_infected_neighbors(
             circular_button, quad_tree)
@@ -227,7 +244,7 @@ class HealthyIndividual(Individual):
         return 0, infected_neighbor_count
 
     @debugging_decorator
-    def sick(self, circular_button):
+    def sick(self, circular_button: CircularButton) -> None:
         """ Method to set the individual's properties when it gets sick.
 
         Args:
@@ -242,7 +259,7 @@ class HealthyIndividual(Individual):
         logging.info("Infected!")
 
     @debugging_decorator
-    def recover(self, circular_button):
+    def recover(self, circular_button: CircularButton) -> None:
         """ Method to set the individual's properties when it recovers.
 
         Args:
@@ -258,7 +275,8 @@ class HealthyIndividual(Individual):
         logging.info("Recovered!")
 
     @debugging_decorator
-    def infection(self, circular_button, quad_tree):
+    def infection(self, circular_button: CircularButton,
+                  quad_tree: QuadTree) -> None:
         """ Method that controls if the individual will get infected by
             being around one or more infected individuals in the provided
             quad_tree, or if the individual is now recovered because
@@ -313,7 +331,7 @@ class InfectedIndividual(Individual):
             individual. "infected" by default.
     """
 
-    def __init__(self, simulation, **kwargs):
+    def __init__(self, simulation: Simulation, **kwargs):
         super(Individual, self).__init__(**kwargs)
         self._simulation = simulation
         self._recovered = False
@@ -322,43 +340,43 @@ class InfectedIndividual(Individual):
         self._status = "infected"
 
     @property
-    def status(self):
+    def status(self) -> str:
         return self._status
 
     @status.setter
-    def status(self, status):
+    def status(self, status: str) -> None:
         self._status = status
 
     @property
-    def time_infected(self):
+    def time_infected(self) -> int:
         return self._time_infected
 
     @time_infected.setter
-    def time_infected(self, time_infected):
+    def time_infected(self, time_infected: int) -> None:
         self._time_infected = time_infected
 
     @property
-    def max_time_infected(self):
+    def max_time_infected(self) -> int:
         return self._max_time_infected
 
     @property
-    def recovered(self):
+    def recovered(self) -> bool:
         return self._recovered
 
     @recovered.setter
-    def recovered(self, recovered):
+    def recovered(self, recovered: bool) -> None:
         self._recovered = recovered
 
     @property
-    def simulation(self):
+    def simulation(self) -> Simulation:
         return self._simulation
 
     @simulation.setter
-    def simulation(self, simulation):
+    def simulation(self, simulation: Simulation) -> None:
         self._simulation = simulation
 
     @debugging_decorator
-    def recover(self, circular_button):
+    def recover(self, circular_button: CircularButton) -> None:
         """ Method to set the individual's properties when it recovers.
 
         Args:
@@ -374,7 +392,8 @@ class InfectedIndividual(Individual):
         logging.info("Recovered!")
 
     @debugging_decorator
-    def infection(self, circular_button, quad_tree):
+    def infection(self, circular_button: CircularButton,
+                  quad_tree: QuadTree) -> None:
         """ Method that controls if the individual is now recovered because
             self.max_time_infected cycles have passed after infection.
 

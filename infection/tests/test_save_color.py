@@ -6,7 +6,7 @@ from infection.simulation import Simulation
 
 
 @pytest.fixture
-def simulation_instance():
+def simulation_instance() -> Simulation:
     """ This is a pytest.fixture method to provide quick access to the class
         that contains the method are testing.
 
@@ -18,7 +18,7 @@ def simulation_instance():
     return simulation
 
 
-def test_save_color_healthy(simulation_instance):
+def test_save_color_healthy(simulation_instance: Simulation) -> None:
     """ This method will test if save_color correctly sets
         simulation_instance.healthy_color to the color of healthy_clr_pkr.
 
@@ -32,7 +32,7 @@ def test_save_color_healthy(simulation_instance):
     assert simulation_instance.healthy_color == [.5, .5, .5, 1.0]
 
 
-def test_save_color_infected(simulation_instance):
+def test_save_color_infected(simulation_instance: Simulation) -> None:
     """ This method will test if save_color correctly sets
         simulation_instance.infected_color to the color of infected_clr_pkr.
 
@@ -46,7 +46,7 @@ def test_save_color_infected(simulation_instance):
     assert simulation_instance.infected_color == [.5, .5, .5, 1.0]
 
 
-def test_save_color_recovered(simulation_instance):
+def test_save_color_recovered(simulation_instance: Simulation) -> None:
     """ This method will test if save_color correctly sets
         simulation_instance.recovered_color to the color of recovered_clr_pkr.
 

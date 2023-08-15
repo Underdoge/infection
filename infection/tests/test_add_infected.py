@@ -6,7 +6,7 @@ from infection.simulation import Simulation
 
 
 @pytest.fixture
-def simulation_instance():
+def simulation_instance() -> Simulation:
     """ This is a pytest.fixture method to provide quick access to the class
         that contains the method are testing.
 
@@ -18,7 +18,7 @@ def simulation_instance():
     return simulation
 
 
-def test_add_infected(simulation_instance):
+def test_add_infected(simulation_instance: Simulation) -> None:
     """ This method will test if add_infected(1) actually increments the
         simulation_instance.infected counter by one.
 
@@ -30,7 +30,7 @@ def test_add_infected(simulation_instance):
     assert simulation_instance.infected == 1
 
 
-def test_add_infected_more_than_one(simulation_instance):
+def test_add_infected_more_than_one(simulation_instance: Simulation) -> None:
     """ This method will test if add_infected(2) actually increments the
         simulation_instance.infected counter by 2.
 

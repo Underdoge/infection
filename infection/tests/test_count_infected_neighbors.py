@@ -6,7 +6,7 @@ from infection.simulation import Simulation
 
 
 @pytest.fixture
-def simulation_instance():
+def simulation_instance() -> Simulation:
     """ This is a pytest.fixture method to provide quick access to the class
         that contains the method are testing.
 
@@ -18,7 +18,7 @@ def simulation_instance():
     return simulation
 
 
-def test_count_infected_neighbors_two(simulation_instance):
+def test_count_infected_neighbors_two(simulation_instance: Simulation) -> None:
     """ This method will test if count_infected_neighbors() correctly finds
         two infected individuals nearby.
 
@@ -42,7 +42,8 @@ def test_count_infected_neighbors_two(simulation_instance):
     assert infected_neighbor_count == 2
 
 
-def test_count_infected_neighbors_zero(simulation_instance):
+def test_count_infected_neighbors_zero(
+        simulation_instance: Simulation) -> None:
     """ This method will test if count_infected_neighbors() correctly finds
         no infected individuals when two healthy individuals are nearby.
 

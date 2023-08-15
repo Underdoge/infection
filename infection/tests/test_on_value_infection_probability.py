@@ -6,7 +6,7 @@ from infection.simulation import Simulation
 
 
 @pytest.fixture
-def simulation_instance():
+def simulation_instance() -> Simulation:
     """ This is a pytest.fixture method to provide quick access to the class
         that contains the method are testing.
 
@@ -18,7 +18,8 @@ def simulation_instance():
     return simulation
 
 
-def test_on_value_infection_probability(simulation_instance):
+def test_on_value_infection_probability(
+        simulation_instance: Simulation) -> None:
     """ This method will test if on_value_infection_probability correctly
         updates the text of the infection probability value Label to the
         value of the Slider when it changes.

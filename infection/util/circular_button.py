@@ -1,6 +1,12 @@
 """ This module defines the CircularButton class and all of its properties
     and methods.
 """
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from infection.simulation import Simulation
+    from infection.util.individual import Individual
+    from kivy.properties import ObservableReferenceList
 import numpy as np
 from kivy.properties import (
     NumericProperty, ReferenceListProperty
@@ -52,38 +58,39 @@ class CircularButton(ButtonBehavior, Label):
     direction_y = NumericProperty(0)
     direction = ReferenceListProperty(direction_x, direction_y)
 
-    def __init__(self, individual, simulation, **kwargs):
+    def __init__(self, individual: Individual,
+                 simulation: Simulation, **kwargs) -> None:
         super(CircularButton, self).__init__(**kwargs)
         self._simulation = simulation
         self._individual = individual
-        self._speed = 0
+        self._speed = 0.0
 
     @property
-    def simulation(self):
+    def simulation(self) -> Simulation:
         return self._simulation
 
     @simulation.setter
-    def simulation(self, simulation):
+    def simulation(self, simulation: Simulation) -> None:
         self._simulation = simulation
 
     @property
-    def individual(self):
+    def individual(self) -> Individual:
         return self._individual
 
     @individual.setter
-    def individual(self, individual):
+    def individual(self, individual: Individual) -> None:
         self._individual = individual
 
     @property
-    def speed(self):
+    def speed(self) -> float:
         return self._speed
 
     @speed.setter
-    def speed(self, speed):
+    def speed(self, speed: float) -> None:
         self._speed = speed
 
     @debugging_decorator
-    def distance(self, coord):
+    def distance(self, coord: ObservableReferenceList) -> float:
         """ This is a simple formula to calculate the ecludian distance
             between the button's current coordinate (self.pos) and a
             second button's coordinate (coord) in the canvas.
@@ -97,7 +104,7 @@ class CircularButton(ButtonBehavior, Label):
         """
         return np.sqrt((self.pos[0]-coord[0])**2 + (self.pos[1]-coord[1])**2)
 
-    def move(self, sim):
+    def move(self, sim: Simulation) -> None:
         """ Method that moves the button across the canvas one step each
             refresh cycle. If the button is at the edge of the canvas, its
             direction is inverted by multiplying it by -1 to simulate a

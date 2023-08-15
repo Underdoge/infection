@@ -31,13 +31,9 @@ class MenuBottom(BoxLayout):
             in the menu.
         lbl_value_infected: Kivy Label that displays the infected Individual
             count.
-
-    Args:
-        simulation (Simulation): An instance of the simulation's class to
-        access its methods and control the simulation.
     """
 
-    def __init__(self, simulation, **kwargs):
+    def __init__(self, **kwargs):
         super(MenuBottom, self).__init__(**kwargs)
         self.lbl_infection_probability = Label(text='Infection\nProbability:')
         self.lbl_sldr_infection_probability = Label(text='0.2')
@@ -60,15 +56,16 @@ class MenuBottom(BoxLayout):
         self.sldr_infection_probability.bind(
             value=self.on_value_infection_probability)
 
-    def on_value_infection_probability(self, instance, probality):
+    def on_value_infection_probability(self, instance: Slider,
+                                       probality: float) -> None:
         """ Method that updates the text of the infection probability value
             Label to the value of the Slider when it changes.
 
         Args:
-            instance (kivy.uix.slider.Slider): The infection
-            probability Slider's instance.
-            probality (Float): The value of the new infection probability set
-            in the Slider. Goes from 0.0 to 1.0
+            instance (kivy.uix.slider.Slider): The infection probability
+                Slider's instance.
+            probality (float): The value of the new infection probability set
+                in the Slider. Goes from 0.0 to 1.0
         """
         self.lbl_sldr_infection_probability.text = str(round(
             probality / 10, 1))

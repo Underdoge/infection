@@ -6,7 +6,7 @@ from infection.simulation import Simulation
 
 
 @pytest.fixture
-def simulation_instance():
+def simulation_instance() -> Simulation:
     """ This is a pytest.fixture method to provide quick access to the class
         that contains the method are testing.
 
@@ -18,7 +18,7 @@ def simulation_instance():
     return simulation
 
 
-def test_infection_sick(simulation_instance):
+def test_infection_sick(simulation_instance: Simulation) -> None:
     """ This method will test if infection() correctly evaluates the infection
         status of a healthy individual with infection probability of 1.0
         when near an infected individual and makes it sick.
@@ -42,7 +42,7 @@ def test_infection_sick(simulation_instance):
     assert simulation.population[0].color == simulation.infected_color
 
 
-def test_infection_recover(simulation_instance):
+def test_infection_recover(simulation_instance: Simulation) -> None:
     """ This method will test if infection() correctly evaluates the infection
         status of an infected individual and it succesfully recovers when
         max_time_infected has been reached.

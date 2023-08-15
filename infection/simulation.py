@@ -1,6 +1,7 @@
 """ This module defines the Simulation class and all of its properties
     and methods. This is the main class that controls the simulation.
 """
+from __future__ import annotations
 from quads import QuadTree
 from infection.decorators.debugging_decorator import debugging_decorator
 from infection.util.menu_bottom import MenuBottom
@@ -20,7 +21,6 @@ import logging
 
 lock = Lock()
 logging.basicConfig(level=10, format="%(threadName)s:%(message)s")
-INDIVIDUAL_SIZE = Window.size[1] * .035
 
 
 class Simulation(App):
@@ -41,7 +41,7 @@ class Simulation(App):
         individual_size: The size of an individual in the canvas. It also
             determines how close a healthy individual needs to be to an
             infected one to get infected. Ignored in the InfectedIndividual
-            class. Initialized to INDIVIDUAL_SIZE.
+            class. Initialized to Window.size[1] * .035.
         healthy_color: The color of a healthy individual in the canvas.
             Initialized to the rgba value of blue.
         infected_color: The color of an infected individual in the canvas.
@@ -59,124 +59,127 @@ class Simulation(App):
         self._population = []
         self._healthy = 0
         self._infected = 0
-        self._individual_size = INDIVIDUAL_SIZE
+        self._individual_size = Window.size[1] * .035
         self._healthy_color = [0, .3, .7, 1]
         self._infected_color = [.85, .07, .23, 1]
         self._recovered_color = [0, .5, 0, 1]
 
     @property
-    def quadtree(self):
+    def quadtree(self) -> QuadTree:
         return self._quadtree
 
     @quadtree.setter
-    def quadtree(self, quadtree):
+    def quadtree(self, quadtree: QuadTree) -> None:
         self._quadtree = quadtree
 
     @property
-    def thread_pool(self):
+    def thread_pool(self) -> ThreadPoolExecutor:
         return self._thread_pool
 
     @thread_pool.setter
-    def thread_pool(self, thread_pool):
+    def thread_pool(self, thread_pool: ThreadPoolExecutor) -> None:
         self._thread_pool = thread_pool
 
     @property
-    def infected(self):
+    def infected(self) -> int:
         return self._infected
 
     @infected.setter
-    def infected(self, infected_number):
+    def infected(self, infected_number: int) -> None:
         self._infected = infected_number
 
     @infected.deleter
-    def infected(self):
+    def infected(self) -> None:
         self._infected = 0
 
     @property
-    def healthy(self):
+    def healthy(self) -> int:
         return self._healthy
 
     @healthy.setter
-    def healthy(self, healthy_number):
+    def healthy(self, healthy_number: int) -> None:
         self._healthy = healthy_number
 
     @healthy.deleter
-    def healthy(self):
+    def healthy(self) -> None:
         self._healthy = 0
 
     @property
-    def threads(self):
+    def threads(self) -> int:
         return self._threads
 
     @threads.setter
-    def threads(self, threads):
+    def threads(self, threads: int) -> None:
         self._threads = threads
 
     @threads.deleter
-    def threads(self):
+    def threads(self) -> None:
         self._threads = 0
 
     @property
-    def population(self):
+    def population(self) -> list:
         return self._population
 
     @population.setter
-    def population(self, population: list):
+    def population(self, population: list) -> None:
         self._population = population
 
     @population.deleter
-    def population(self):
+    def population(self) -> None:
         self._population = []
 
     @property
-    def infection_radius(self):
+    def infection_radius(self) -> int:
         return self._infection_radius
 
     @infection_radius.setter
-    def infection_radius(self, infection_radius):
+    def infection_radius(self, infection_radius: int) -> None:
         self._infection_radius = infection_radius
 
     @property
-    def individual_size(self):
+    def individual_size(self) -> int:
         return self._individual_size
 
     @individual_size.setter
-    def individual_size(self, individual_size):
+    def individual_size(self, individual_size: int) -> None:
         self._individual_size = individual_size
 
     @property
-    def healthy_color(self):
+    def healthy_color(self) -> list:
         return self._healthy_color
 
     @healthy_color.setter
-    def healthy_color(self, healthy_color):
+    def healthy_color(self, healthy_color: list) -> None:
         self._healthy_color = healthy_color
 
     @property
-    def infected_color(self):
+    def infected_color(self) -> list:
         return self._infected_color
 
     @infected_color.setter
-    def infected_color(self, infected_color):
+    def infected_color(self, infected_color: list) -> None:
         self._infected_color = infected_color
 
     @property
-    def recovered_color(self):
+    def recovered_color(self) -> list:
         return self._recovered_color
 
     @recovered_color.setter
-    def recovered_color(self, recovered_color):
+    def recovered_color(self, recovered_color: list) -> None:
         self._recovered_color = recovered_color
 
     @debugging_decorator
-    def safe_sum_healthy(self, healthy_number):
+    def safe_sum_healthy(self, healthy_number: int) -> int:
         """ Method that safely increases or decreases the healthy individual
             count, using "with lock" to avoid race condition. It also updates
             the value of the healthy individual count Label in the menu.
 
         Args:
-            healthy_number (Integer): The number of healthy individuals to
+            healthy_number (int): The number of healthy individuals to
             increase or decrease.
+
+        Returns:
+            self.healthy (int): The final count of healthy individuals.
         """
         with lock:
             self.healthy += healthy_number
@@ -185,14 +188,17 @@ class Simulation(App):
         return self.healthy
 
     @debugging_decorator
-    def safe_sum_infected(self, infected_number):
+    def safe_sum_infected(self, infected_number: int) -> int:
         """ Method that safely increases or decreases the infected individual
             count, using "with lock" to avoid race condition. It also updates
             the value of the infected individual count Label in the menu.
 
         Args:
-            infected_number (Integer): The number of infected individuals to
+            infected_number (int): The number of infected individuals to
             increase or decrease.
+
+        Returns:
+            self.infected (int): The final count of infected individuals.
         """
         with lock:
             self.infected += infected_number
@@ -201,9 +207,13 @@ class Simulation(App):
         return self.infected
 
     @debugging_decorator
-    def reset_population(self, *largs):
+    def reset_population(self, *largs) -> list:
         """ Method that resets all the simulation's properties to their
             initial states and values.
+
+        Returns:
+            self.population (list): An empty list after the population
+                was deleted.
         """
         self.menu.lbl_value_population.text = "0"
         self.menu.lbl_value_healthy.text = "0"
@@ -221,14 +231,17 @@ class Simulation(App):
         return self.population
 
     @debugging_decorator
-    def add_healthy(self, number, *largs):
+    def add_healthy(self, number: int, *largs) -> int:
         """ Method that adds new healthy individuals to the simulation. The
             number of individuals added is determined by the provided "number"
             argument.
 
         Args:
-            number (Integer): The number of healthy individuals to add to the
+            number (int): The number of healthy individuals to add to the
             simulation.
+
+        Returns:
+            self.healthy (int): The final count of healthy individuals.
         """
         self.menu.lbl_value_population.text = str(
             int(self.menu.lbl_value_population.text) + number)
@@ -257,14 +270,17 @@ class Simulation(App):
                 return self.healthy
 
     @debugging_decorator
-    def add_infected(self, number, *largs):
+    def add_infected(self, number: int, *largs) -> int:
         """ Method that adds new infected individuals to the simulation. The
             number of individuals added is determined by the provided "number"
             argument.
 
         Args:
-            number (Integer): The number of infected individuals to add to the
+            number (int): The number of infected individuals to add to the
             simulation.
+
+        Returns:
+            self.infected (int): The final count of infected individuals.
         """
         self.menu.lbl_value_population.text = str(
             int(self.menu.lbl_value_population.text) + number)
@@ -290,7 +306,7 @@ class Simulation(App):
                 self.population.append(circular_button)
                 return self.infected
 
-    def update(self, dt):
+    def update(self, dt: float) -> None:
         """ Kivy method used to update the simulation on each cycle.
             It uses the thread pool in self.thread_pool to spawn threads to
             control the infection state and movement of each individual in
@@ -324,13 +340,13 @@ class Simulation(App):
             self.threads = len(enumerate())
             logging.info(f"Threads: {self.threads}")
 
-    def build(self):
+    def build(self) -> BoxLayout:
         """ Kivy method that initializes and integrates all the components of
             the Simulation App instance and its graphical components.
 
         Returns:
-            root (BoxLayout): An instance of the root Kivy widget that
-            contains all the graphical components of the simulation.
+            self.root (BoxLayout): An instance of the root Kivy widget that
+                contains all the graphical components of the simulation.
         """
         self.root = BoxLayout(orientation='vertical')
         self.layout = AnchorLayout(anchor_x='right', anchor_y='top')
@@ -338,7 +354,7 @@ class Simulation(App):
                                     orientation='vertical',
                                     size_hint=(.1, .7))
         self.layout.add_widget(self.menu_right)
-        self.menu = MenuBottom(self, size_hint=(1, 0.2))
+        self.menu = MenuBottom(size_hint=(1, 0.2))
         self.root.add_widget(self.layout)
         self.root.add_widget(self.menu)
         Clock.schedule_interval(self.update, 1.0 / 60.0)
