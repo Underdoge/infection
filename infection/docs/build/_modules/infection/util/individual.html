@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>infection.util.individual &mdash; infection 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            infection
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">infection</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">infection.util.individual</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for infection.util.individual</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot; This module defines the Individual abstract class, and its</span>
+<span class="sd">    HeallthyIndividual and InfectedIndividual subclasses and all of their</span>
+<span class="sd">    properties and methods.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">infection.simulation</span> <span class="kn">import</span> <span class="n">Simulation</span>
+    <span class="kn">from</span> <span class="nn">infection.util.circular_button</span> <span class="kn">import</span> <span class="n">CircularButton</span>
+    <span class="kn">from</span> <span class="nn">quads</span> <span class="kn">import</span> <span class="n">QuadTree</span>
+<span class="kn">from</span> <span class="nn">infection.decorators.debugging_decorator</span> <span class="kn">import</span> <span class="n">debugging_decorator</span>
+<span class="kn">from</span> <span class="nn">quads</span> <span class="kn">import</span> <span class="n">BoundingBox</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">uniform</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(threadName)s</span><span class="s2">:</span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">MAX_COOLDOWN</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="n">MAX_TIME_INFECTED</span> <span class="o">=</span> <span class="mi">2000</span>
+
+
+<div class="viewcode-block" id="Individual"><a class="viewcode-back" href="../../../infection.util.html#infection.util.individual.Individual">[docs]</a><span class="k">class</span> <span class="nc">Individual</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; This is the definition of the Individual abstract class. It inherits</span>
+<span class="sd">        from the ABC class to make it an abstract class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; String property used to track the infection status of the</span>
+<span class="sd">            individual.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@property</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">simulation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Simulation</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; To store an instance of the simulation class.&quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@property</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">recovered</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Boolean property used to track when the individual has recovered</span>
+<span class="sd">            from an infection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@property</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">time_infected</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Integer property to track how long the individual has been</span>
+<span class="sd">            infected.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="Individual.infection"><a class="viewcode-back" href="../../../infection.util.html#infection.util.individual.Individual.infection">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">infection</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Abstract method that will control the infection status of the</span>
+<span class="sd">            individual and decide if it will get infected or if it will</span>
+<span class="sd">            recover.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Individual.recover"><a class="viewcode-back" href="../../../infection.util.html#infection.util.individual.Individual.recover">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">recover</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Abstract method that will set the properties when the individual</span>
+<span class="sd">            recovers from infection</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div></div>
+
+
+<div class="viewcode-block" id="HealthyIndividual"><a class="viewcode-back" href="../../../infection.util.html#infection.util.individual.HealthyIndividual">[docs]</a><span class="k">class</span> <span class="nc">HealthyIndividual</span><span class="p">(</span><span class="n">Individual</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; This is the definition of the HealthyIndividual class. It inherits</span>
+<span class="sd">        from the Individual abstract class.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        simulation (Simulation): Instance of the Simulation class.</span>
+<span class="sd">        infection_probability (Float): A value from 0 to 1 that</span>
+<span class="sd">            determines how likely is an individual to get infected.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        simulation: To store the instance of the simulation class.</span>
+<span class="sd">        infection_probability: To store the infection_probability.</span>
+<span class="sd">        recovered: Boolean property used to track when the individual has</span>
+<span class="sd">            recovered from an infection. False by default. True when it has</span>
+<span class="sd">            recovered from an infection. An individual that has recovered</span>
+<span class="sd">            from an infection can no longer get infected.</span>
+<span class="sd">        time_infected: Integer property that tracks during how many cycles</span>
+<span class="sd">            the individual has been infected.</span>
+<span class="sd">        max_time_infected: Integer property that defines how many cycles need</span>
+<span class="sd">            to pass until the individual recovers.</span>
+<span class="sd">            Set to MAX_TIME_INFECTED.</span>
+<span class="sd">        cooldown: Integer property that tracks how many cycles have passed</span>
+<span class="sd">            after the last infection evaluation to avoid evaluating against</span>
+<span class="sd">            the same individual multiple times after crossing paths.</span>
+<span class="sd">        max_cooldown: Integer property that defines how many cycles need</span>
+<span class="sd">            to pass until the infection evaluations restart.</span>
+<span class="sd">            Set to MAX_COOLDOWN.</span>
+<span class="sd">        status: String property that tracks the infection status of the</span>
+<span class="sd">            individual. &quot;healthy&quot; by default.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulation</span><span class="p">:</span> <span class="n">Simulation</span><span class="p">,</span>
+                 <span class="n">infection_probability</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Individual</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_simulation</span> <span class="o">=</span> <span class="n">simulation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_infection_probability</span> <span class="o">=</span> <span class="n">infection_probability</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_recovered</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_time_infected</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_time_infected</span> <span class="o">=</span> <span class="n">MAX_TIME_INFECTED</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cooldown</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_cooldown</span> <span class="o">=</span> <span class="n">MAX_COOLDOWN</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="s2">&quot;healthy&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status</span>
+
+    <span class="nd">@status</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">status</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">time_infected</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_infected</span>
+
+    <span class="nd">@time_infected</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">time_infected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_infected</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_time_infected</span> <span class="o">=</span> <span class="n">time_infected</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">max_time_infected</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_time_infected</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">cooldown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cooldown</span>
+
+    <span class="nd">@cooldown</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">cooldown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cooldown</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cooldown</span> <span class="o">=</span> <span class="n">cooldown</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">max_cooldown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_cooldown</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">recovered</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recovered</span>
+
+    <span class="nd">@recovered</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">recovered</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recovered</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_recovered</span> <span class="o">=</span> <span class="n">recovered</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">infection_probability</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_infection_probability</span>
+
+    <span class="nd">@infection_probability</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">infection_probability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">infection_probability</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_infection_probability</span> <span class="o">=</span> <span class="n">infection_probability</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">simulation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Simulation</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulation</span>
+
+    <span class="nd">@simulation</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">simulation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulation</span><span class="p">:</span> <span class="n">Simulation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_simulation</span> <span class="o">=</span> <span class="n">simulation</span>
+
+<div class="viewcode-block" id="HealthyIndividual.count_infected_neighbors"><a class="viewcode-back" href="../../../infection.util.html#infection.util.individual.HealthyIndividual.count_infected_neighbors">[docs]</a>    <span class="nd">@debugging_decorator</span>
+    <span class="k">def</span> <span class="nf">count_infected_neighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">circular_button</span><span class="p">:</span> <span class="n">CircularButton</span><span class="p">,</span>
+                                 <span class="n">quad_tree</span><span class="p">:</span> <span class="n">QuadTree</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Method that searches the quad_tree to find the number of infected</span>
+<span class="sd">            individuals within the provided radius and returns the count in</span>
+<span class="sd">            the infected_neighbor_count variable.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            circular_button (CircularButton): Instance of the button</span>
+<span class="sd">                containing the individual.</span>
+<span class="sd">            quad_tree (QuadTree): A quadtree structure that contains the</span>
+<span class="sd">                positions of all the individuals in the simulation for fast</span>
+<span class="sd">                neighbor search.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            infected_neighbor_count (int): The number of infected individuals</span>
+<span class="sd">                within the provided radius.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">infected_neighbor_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">infection_radius</span> <span class="o">=</span> <span class="n">circular_button</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">individual_size</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Get all Points in the quadtree within the individual&#39;s radius,</span>
+<span class="sd">            including the individual itself.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">others</span> <span class="o">=</span> <span class="n">quad_tree</span><span class="o">.</span><span class="n">within_bb</span><span class="p">(</span>
+            <span class="n">BoundingBox</span><span class="p">(</span><span class="n">circular_button</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">infection_radius</span><span class="p">,</span>
+                        <span class="n">circular_button</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">infection_radius</span><span class="p">,</span>
+                        <span class="n">circular_button</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">infection_radius</span><span class="p">,</span>
+                        <span class="n">circular_button</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">infection_radius</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">others</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">infected_others</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="s2">&quot;infected&quot;</span><span class="p">,</span>
+                                          <span class="n">others</span><span class="p">))</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot; BoundingBox is a square around the individual&#39;s position so</span>
+<span class="sd">                we still need to filter out some individuals that may be</span>
+<span class="sd">                outside the infection_radius and the individual itself.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">infected_other</span> <span class="ow">in</span> <span class="n">infected_others</span><span class="p">:</span>
+                <span class="n">distance</span> <span class="o">=</span> <span class="n">circular_button</span><span class="o">.</span><span class="n">distance</span><span class="p">((</span><span class="n">infected_other</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>
+                                                     <span class="n">infected_other</span><span class="o">.</span><span class="n">y</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">distance</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">distance</span> <span class="o">&lt;=</span> <span class="n">infection_radius</span><span class="p">:</span>
+                    <span class="n">infected_neighbor_count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">infected_neighbor_count</span></div>
+
+<div class="viewcode-block" id="HealthyIndividual.evaluate_infection"><a class="viewcode-back" href="../../../infection.util.html#infection.util.individual.HealthyIndividual.evaluate_infection">[docs]</a>    <span class="nd">@debugging_decorator</span>
+    <span class="k">def</span> <span class="nf">evaluate_infection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">circular_button</span><span class="p">:</span> <span class="n">CircularButton</span><span class="p">,</span>
+                           <span class="n">quad_tree</span><span class="p">:</span> <span class="n">QuadTree</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Method that calls the count_infected_neighbors method and if</span>
+<span class="sd">            there&#39;s one or more infected neighbors, a formula is used to</span>
+<span class="sd">            randomly calculate if the individual should get infected based on</span>
+<span class="sd">            the infection_probability and the number of infected neighbors.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            circular_button (CircularButton): Instance of the button</span>
+<span class="sd">                containing the individual.</span>
+<span class="sd">            quad_tree (QuadTree): A quadtree structure that contains the</span>
+<span class="sd">                positions of all the individuals in the simulation for fast</span>
+<span class="sd">                neighbor search.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            infected (int): 0 if not infected, 1 or more if infected.</span>
+<span class="sd">            infected_neighbor_count: The number of infected individuals</span>
+<span class="sd">                within the provided radius.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">infected_neighbor_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_infected_neighbors</span><span class="p">(</span>
+            <span class="n">circular_button</span><span class="p">,</span> <span class="n">quad_tree</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">infected_neighbor_count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">infected</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span>
+                <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                <span class="n">size</span><span class="o">=</span><span class="n">infected_neighbor_count</span><span class="p">,</span>
+                <span class="n">p</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">infection_probability</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">infection_probability</span><span class="p">]))</span>
+            <span class="k">return</span> <span class="n">infected</span><span class="p">,</span> <span class="n">infected_neighbor_count</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="n">infected_neighbor_count</span></div>
+
+<div class="viewcode-block" id="HealthyIndividual.sick"><a class="viewcode-back" href="../../../infection.util.html#infection.util.individual.HealthyIndividual.sick">[docs]</a>    <span class="nd">@debugging_decorator</span>
+    <span class="k">def</span> <span class="nf">sick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">circular_button</span><span class="p">:</span> <span class="n">CircularButton</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Method to set the individual&#39;s properties when it gets sick.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            circular_button (CircularButton): Instance of the button</span>
+<span class="sd">                containing the individual.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;infected&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">safe_sum_infected</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">safe_sum_healthy</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">circular_button</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">infected_color</span>
+        <span class="n">circular_button</span><span class="o">.</span><span class="n">speed</span> <span class="o">=</span> <span class="n">uniform</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Infected!&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HealthyIndividual.recover"><a class="viewcode-back" href="../../../infection.util.html#infection.util.individual.HealthyIndividual.recover">[docs]</a>    <span class="nd">@debugging_decorator</span>
+    <span class="k">def</span> <span class="nf">recover</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">circular_button</span><span class="p">:</span> <span class="n">CircularButton</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Method to set the individual&#39;s properties when it recovers.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            circular_button (CircularButton): Instance of the button</span>
+<span class="sd">                containing the individual.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recovered</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;healthy&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">safe_sum_healthy</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">safe_sum_infected</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">circular_button</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">recovered_color</span>
+        <span class="n">circular_button</span><span class="o">.</span><span class="n">speed</span> <span class="o">=</span> <span class="n">uniform</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Recovered!&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HealthyIndividual.infection"><a class="viewcode-back" href="../../../infection.util.html#infection.util.individual.HealthyIndividual.infection">[docs]</a>    <span class="nd">@debugging_decorator</span>
+    <span class="k">def</span> <span class="nf">infection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">circular_button</span><span class="p">:</span> <span class="n">CircularButton</span><span class="p">,</span>
+                  <span class="n">quad_tree</span><span class="p">:</span> <span class="n">QuadTree</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Method that controls if the individual will get infected by</span>
+<span class="sd">            being around one or more infected individuals in the provided</span>
+<span class="sd">            quad_tree, or if the individual is now recovered because</span>
+<span class="sd">            self.max_time_infected cycles have passed after infection.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            circular_button (CircularButton): The instance of the button</span>
+<span class="sd">                containing the individual to change its properties.</span>
+<span class="sd">            quad_tree (QuadTree): A quadtree structure that contains the</span>
+<span class="sd">                position of all the individuals in the canvas for fast</span>
+<span class="sd">                neighbor search.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">recovered</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">cooldown</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cooldown</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="s2">&quot;infected&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">time_infected</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_infected</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_time_infected</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">recover</span><span class="p">(</span><span class="n">circular_button</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">infected</span><span class="p">,</span> <span class="n">infected_neighbour_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_infection</span><span class="p">(</span>
+                <span class="n">circular_button</span><span class="p">,</span> <span class="n">quad_tree</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">infected_neighbour_count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">infected</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sick</span><span class="p">(</span><span class="n">circular_button</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">cooldown</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_cooldown</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Contact with </span><span class="si">{</span><span class="n">infected_neighbour_count</span><span class="si">}</span><span class="s2"> </span><span class="se">\</span>
+<span class="s2">infected neighbors but no infection.&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="InfectedIndividual"><a class="viewcode-back" href="../../../infection.util.html#infection.util.individual.InfectedIndividual">[docs]</a><span class="k">class</span> <span class="nc">InfectedIndividual</span><span class="p">(</span><span class="n">Individual</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; This is the definition of the InfectedIndividual class. It inherits</span>
+<span class="sd">    from the Individual abstract class.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        simulation (Simulation): Instance of the Simulation class.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        simulation: To store the instance of the simulation class.</span>
+<span class="sd">        recovered: Boolean property used to track when the individual has</span>
+<span class="sd">            recovered from an infection. False by default. True when it has</span>
+<span class="sd">            recovered from an infection. An individual that has recovered</span>
+<span class="sd">            from an infection can no longer get infected.</span>
+<span class="sd">        time_infected: Integer property that tracks during how many cycles</span>
+<span class="sd">            the individual has been infected.</span>
+<span class="sd">        max_time_infected: Integer property that defines how many cycles need</span>
+<span class="sd">            to pass until the individual recovers.</span>
+<span class="sd">            Set to MAX_TIME_INFECTED.</span>
+<span class="sd">        status: String property that tracks the infection status of the</span>
+<span class="sd">            individual. &quot;infected&quot; by default.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulation</span><span class="p">:</span> <span class="n">Simulation</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Individual</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_simulation</span> <span class="o">=</span> <span class="n">simulation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_recovered</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_time_infected</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_time_infected</span> <span class="o">=</span> <span class="n">MAX_TIME_INFECTED</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="s2">&quot;infected&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_status</span>
+
+    <span class="nd">@status</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="n">status</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">time_infected</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_infected</span>
+
+    <span class="nd">@time_infected</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">time_infected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_infected</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_time_infected</span> <span class="o">=</span> <span class="n">time_infected</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">max_time_infected</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_time_infected</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">recovered</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recovered</span>
+
+    <span class="nd">@recovered</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">recovered</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recovered</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_recovered</span> <span class="o">=</span> <span class="n">recovered</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">simulation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Simulation</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulation</span>
+
+    <span class="nd">@simulation</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">simulation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulation</span><span class="p">:</span> <span class="n">Simulation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_simulation</span> <span class="o">=</span> <span class="n">simulation</span>
+
+<div class="viewcode-block" id="InfectedIndividual.recover"><a class="viewcode-back" href="../../../infection.util.html#infection.util.individual.InfectedIndividual.recover">[docs]</a>    <span class="nd">@debugging_decorator</span>
+    <span class="k">def</span> <span class="nf">recover</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">circular_button</span><span class="p">:</span> <span class="n">CircularButton</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Method to set the individual&#39;s properties when it recovers.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            circular_button (CircularButton): Instance of the button</span>
+<span class="sd">                containing the individual.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recovered</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;healthy&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">safe_sum_healthy</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">safe_sum_infected</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">circular_button</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="o">.</span><span class="n">recovered_color</span>
+        <span class="n">circular_button</span><span class="o">.</span><span class="n">speed</span> <span class="o">=</span> <span class="n">uniform</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Recovered!&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="InfectedIndividual.infection"><a class="viewcode-back" href="../../../infection.util.html#infection.util.individual.InfectedIndividual.infection">[docs]</a>    <span class="nd">@debugging_decorator</span>
+    <span class="k">def</span> <span class="nf">infection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">circular_button</span><span class="p">:</span> <span class="n">CircularButton</span><span class="p">,</span>
+                  <span class="n">quad_tree</span><span class="p">:</span> <span class="n">QuadTree</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Method that controls if the individual is now recovered because</span>
+<span class="sd">            self.max_time_infected cycles have passed after infection.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            circular_button (CircularButton): The instance of the button</span>
+<span class="sd">                containing the individual to change its properties.</span>
+<span class="sd">            quad_tree (QuadTree): A quadtree structure that contains the</span>
+<span class="sd">                position of all the individuals in the canvas for fast</span>
+<span class="sd">                neighbor search. Ignored in the InfectedIndividual class.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">recovered</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_infected</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_infected</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_time_infected</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">recover</span><span class="p">(</span><span class="n">circular_button</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Eduardo Chapa (Underdoge).</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
