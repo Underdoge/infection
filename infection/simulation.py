@@ -140,14 +140,6 @@ class Simulation(App):
         self._population = []
 
     @property
-    def infection_radius(self) -> int:
-        return self._infection_radius
-
-    @infection_radius.setter
-    def infection_radius(self, infection_radius: int) -> None:
-        self._infection_radius = infection_radius
-
-    @property
     def individual_size(self) -> int:
         return self._individual_size
 
