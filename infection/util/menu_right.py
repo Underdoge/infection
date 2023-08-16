@@ -75,15 +75,16 @@ class MenuRight(BoxLayout):
                                 on_press=simulation.reset_population)
         self.btn_healthy_color = Button(text='Healthy\n  Color',
                                         on_press=partial(
-                                            self.show_healthy_color_picker))
+                                            self.show_color_picker,
+                                            type="healthy"))
         self.btn_infected_color = Button(
             text='Infected\n   Color',
             on_press=partial(
-                self.show_infected_color_picker))
+                self.show_color_picker, type="infected"))
         self.btn_recovered_color = Button(
             text='Recovered\n     Color',
             on_press=partial(
-                self.show_recovered_color_picker))
+                self.show_color_picker, type="recovered"))
         self.btn_cancel_healthy_color = Button(text='Cancel',
                                                on_press=partial(
                                                    self.cancel_color,
@@ -148,35 +149,24 @@ class MenuRight(BoxLayout):
         self.add_widget(self.btn_recovered_color)
         self.add_widget(self.btn_reset)
 
-    def show_healthy_color_picker(self, instance: Button) -> None:
-        """ Method that opens the popup_healthy_color_picker popup.
+    def show_color_picker(self, instance: Button, type: str) -> None:
+        """ Method that opens the corresponding color picker popup.
 
         Args:
             instance (kivy.uix.button.Button): The clicked Button's
                 instance.
+            type (str): A String that indicates the individual type.
         """
-        self.healthy_clr_pkr.color = self.simulation.healthy_color
-        self.popup_healthy_color_picker.open()
-
-    def show_infected_color_picker(self, instance: Button) -> None:
-        """ Method that opens the popup_infected_color_picker popup.
-
-        Args:
-            instance (kivy.uix.button.Button): The clicked Button's
-                instance.
-        """
-        self.infected_clr_pkr.color = self.simulation.infected_color
-        self.popup_infected_color_picker.open()
-
-    def show_recovered_color_picker(self, instance: Button) -> None:
-        """ Method that opens the popup_recovered_color_picker popup.
-
-        Args:
-            instance (kivy.uix.button.Button): The clicked Button's
-                instance.
-        """
-        self.recovered_clr_pkr.color = self.simulation.recovered_color
-        self.popup_recovered_color_picker.open()
+        match type:
+            case 'healthy':
+                self.healthy_clr_pkr.color = self.simulation.healthy_color
+                self.popup_healthy_color_picker.open()
+            case 'infected':
+                self.infected_clr_pkr.color = self.simulation.infected_color
+                self.popup_infected_color_picker.open()
+            case 'recovered':
+                self.recovered_clr_pkr.color = self.simulation.recovered_color
+                self.popup_recovered_color_picker.open()
 
     def save_color(self, instance: Button, type: str) -> None:
         """ Method that saves the value of the color picker to its
