@@ -13,7 +13,7 @@ from kivy.app import App
 @pytest.fixture
 def simulation_instance() -> Simulation:
     """ This is a pytest.fixture method to provide quick access to the class
-        that contains the method are testing.
+        that contains the method we are testing.
 
     Returns:
         simulation (Simulation): An instance of the simulation class.
