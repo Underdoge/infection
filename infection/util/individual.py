@@ -90,13 +90,15 @@ class HealthyIndividual(Individual):
         time_infected: Integer property that tracks during how many cycles
             the individual has been infected.
         max_time_infected: Integer property that defines how many cycles need
-            to pass until the individual recovers.
+            to pass until the individual recovers. This private property can't
+            be modified since it doesn't have a setter method.
             Set to MAX_TIME_INFECTED.
         cooldown: Integer property that tracks how many cycles have passed
             after the last infection evaluation to avoid evaluating against
             the same individual multiple times after crossing paths.
         max_cooldown: Integer property that defines how many cycles need
-            to pass until the infection evaluations restart.
+            to pass until the infection evaluations restart. This private
+            property can't be modified since it doesn't have a setter method.
             Set to MAX_COOLDOWN.
         status: String property that tracks the infection status of the
             individual. "healthy" by default.
@@ -325,7 +327,8 @@ class InfectedIndividual(Individual):
         time_infected: Integer property that tracks during how many cycles
             the individual has been infected.
         max_time_infected: Integer property that defines how many cycles need
-            to pass until the individual recovers.
+            to pass until the individual recovers. This private property can't
+            be modified since it doesn't have a setter method.
             Set to MAX_TIME_INFECTED.
         status: String property that tracks the infection status of the
             individual. "infected" by default.
