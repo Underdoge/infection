@@ -257,7 +257,7 @@ class HealthyIndividual(Individual):
         self.simulation.safe_sum_infected(1)
         self.simulation.safe_sum_healthy(-1)
         circular_button.color = self.simulation.infected_color
-        circular_button.speed = uniform(0.3, 0.8)
+        circular_button.speed = uniform(0.2, 0.5)
         logging.info("Infected!")
 
     @debugging_decorator
@@ -273,7 +273,7 @@ class HealthyIndividual(Individual):
         self.simulation.safe_sum_healthy(1)
         self.simulation.safe_sum_infected(-1)
         circular_button.color = self.simulation.recovered_color
-        circular_button.speed = uniform(0.5, 0.9)
+        circular_button.speed = uniform(0.3, 0.7)
         logging.info("Recovered!")
 
     @debugging_decorator
@@ -391,7 +391,7 @@ class InfectedIndividual(Individual):
         self.simulation.safe_sum_healthy(1)
         self.simulation.safe_sum_infected(-1)
         circular_button.color = self.simulation.recovered_color
-        circular_button.speed = uniform(0.5, 0.9)
+        circular_button.speed = uniform(0.3, 0.7)
         logging.info("Recovered!")
 
     @debugging_decorator

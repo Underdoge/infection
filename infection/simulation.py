@@ -267,7 +267,7 @@ class Simulation(App):
                     individual=healthy_individual)
                 logging.info(f"New healthy individual with \
 {circular_button.individual.infection_probability} infection probability.")
-                circular_button.speed = uniform(0.5, 0.9)
+                circular_button.speed = uniform(0.3, 0.7)
                 circular_button.direction = Vector(4, 0).rotate(
                     randint(0, 360))
                 self.population.append(circular_button)
@@ -304,7 +304,7 @@ class Simulation(App):
                     simulation=self,
                     individual=infected_individual)
                 logging.info("New infected individual.")
-                circular_button.speed = uniform(0.3, 0.6)
+                circular_button.speed = uniform(0.2, 0.5)
                 circular_button.direction = Vector(4, 0).rotate(
                     randint(0, 360))
                 self.population.append(circular_button)
